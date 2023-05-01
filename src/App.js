@@ -18,6 +18,7 @@ function App() {
           Learn React
         </a>
         <h2> Homebrew FE </h2>
+        <h2> Build... </h2>
       </header>
     </div>
   );
