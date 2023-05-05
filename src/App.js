@@ -1,7 +1,20 @@
-import logo from './logo.svg';
-import './App.css';
+import logo from "./logo.svg";
+import "./App.css";
+import { useEffect } from "react";
+import axios from "axios";
 
 function App() {
+  const BASE_URL = "";
+  const fetch = async () => {
+    const response = await axios({
+      method: "get",
+      url: `${BASE_URL}/test/stringTest`,
+    });
+    console.log(response.data);
+  };
+  useEffect(() => {
+    fetch();
+  }, []);
   return (
     <div className="App">
       <header className="App-header">
