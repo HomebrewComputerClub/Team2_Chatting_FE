@@ -1,12 +1,13 @@
 import logo from './logo.svg';
 import './App.css';
 import axios from 'axios';
+import { useEffect } from 'react';
 function App() {
 	const api = () => {
 		axios
-			.get('http://3.34.232.63:8080/test/stringTest')
+			.get('/test/stringTest')
 			.then((res) => {
-				console.log(res);
+				console.log(res.data);
 			})
 			.catch((e) => {
 				console.log(e);
@@ -26,6 +27,9 @@ function App() {
 				console.log(e.code);
 			});
 	};
+	useEffect(() => {
+		api();
+	}, []);
 	return (
 		<div className='App'>
 			<header className='App-header'>
