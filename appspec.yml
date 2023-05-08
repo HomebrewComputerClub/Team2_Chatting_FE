@@ -1,17 +1,17 @@
-version: 0.0
-os: linux
+# version: 0.0
+# os: linux
 
-files:
-  - source: /
-    destination: /home/ubuntu/fe
-    overwrite: yes
-permissions:
-  - object: /home/ubuntu/fe
-    owner: root
-    group: root
-    mode: 755
-hooks:
-  AfterInstall:
-    - location: build.sh
-      timeout: 1000
-      runas: root
+# files:
+#   - source: /
+#     destination: /home/ubuntu/fe
+#     overwrite: yes
+# permissions:
+#   - object: /home/ubuntu/fe
+#     owner: root
+#     group: root
+#     mode: 755
+# hooks:
+#   AfterInstall:
+#     - location: build.sh
+#       timeout: 1000
+#       runas: root
