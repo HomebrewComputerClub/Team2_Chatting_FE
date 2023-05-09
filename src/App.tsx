@@ -48,7 +48,7 @@ function App() {
         <h2> Homebrew FE </h2>
         <h2> Build... </h2>
         <button onClick={api}>홈브루 get test API호출(CORS 설정 필요)</button>
-        <button onClick={api2}>다른 프로젝트 이메일 전송 API</button>
+        <button onClick={api2}>다른 프로젝트 이메일 전송 API(Cors설정 되어 있음)</button>
       </header>
     </div>
   );
