@@ -11,4 +11,4 @@ sudo yarn install
 # sudo npx pm2 start yarn --interpreter bash -- start
 
 sudo yarn build
-sudo nginx restart
+sudo service nginx restart
