@@ -2,10 +2,11 @@ import logo from "./logo.svg";
 import "./App.css";
 import axios from "axios";
 import { useEffect } from "react";
+const BASE_URL = "";
 function App() {
   const api = () => {
     axios
-      .get("/test/stringTest")
+      .get(`${BASE_URL}/test/stringTest`)
       .then((res) => {
         console.log(res.data);
       })
@@ -35,7 +36,7 @@ function App() {
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
-          Edit <code>src/App.js</code> and save to reload.
+          asdfasdfasdfasdf <code>src/App.js</code> and save to reload.
         </p>
         <a
           className="App-link"
@@ -48,7 +49,9 @@ function App() {
         <h2> Homebrew FE </h2>
         <h2> Build... </h2>
         <button onClick={api}>홈브루 get test API호출(CORS 설정 필요)</button>
-        <button onClick={api2}>다른 프로젝트 이메일 전송 API(Cors설정 되어 있음)</button>
+        <button onClick={api2}>
+          다른 프로젝트 이메일 전송 API(Cors설정 되어 있음)
+        </button>
       </header>
     </div>
   );
