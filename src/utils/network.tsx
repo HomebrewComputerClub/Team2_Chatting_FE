@@ -1,10 +1,10 @@
 import axios from 'axios';
-import { refresh, refreshErrorHandle } from './refresh';
+import { Refresh, refreshErrorHandle } from './refresh';
 
 const client = axios.create({
 	baseURL: 'https://cocobol.site',
 });
 
-client.interceptors.request.use(refresh, refreshErrorHandle);
+client.interceptors.request.use(Refresh, refreshErrorHandle);
 
 export default client;

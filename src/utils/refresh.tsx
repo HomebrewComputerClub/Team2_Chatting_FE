@@ -19,7 +19,7 @@ interface DecodedRefreshToken {
 	exp: number;
 }
 
-const refresh = async (
+const Refresh = async (
 	config: InternalAxiosRequestConfig
 ): Promise<InternalAxiosRequestConfig<any>> => {
 	// 쿠키에 있는 리프레시 토큰 받아옴.
@@ -86,4 +86,4 @@ const refreshErrorHandle = (error: any) => {
 	return Promise.reject(error);
 };
 
-export { refresh, refreshErrorHandle };
+export { Refresh, refreshErrorHandle };
