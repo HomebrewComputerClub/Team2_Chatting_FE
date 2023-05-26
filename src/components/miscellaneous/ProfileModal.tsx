@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { useState } from "react";
 import styled from "styled-components";
+
 export const ModalOverlay = styled.div`
   position: fixed;
   top: 0;
@@ -29,6 +30,12 @@ const Img = styled.img`
   border: 1px solid #111111;
   border-radius: 5px;
 `;
+const Img1 = styled.img`
+  width: 3vw;
+  height: 3vw;
+  border: 1px solid #eeeeee;
+  border-radius: 5px;
+`;
 
 const ProfileModal = ({ user }: any) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -44,8 +51,9 @@ const ProfileModal = ({ user }: any) => {
         onClick={() => {
           setIsOpen(true);
         }}
+        style={{ border: "none" }}
       >
-        open
+        <Img1 src={user.pic} />
       </button>
       {isOpen ? (
         <ModalOverlay onClick={onOverlayClick}>
