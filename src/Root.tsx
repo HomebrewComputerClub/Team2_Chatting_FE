@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Outlet, Navigate } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import styled from "styled-components";
 import TopBar from "./components/miscellaneous/TopBar";
@@ -10,6 +10,7 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
+  height: 2000px;
 `;
 const Content = styled.div`
   display: flex;
@@ -18,7 +19,9 @@ const Content = styled.div`
 function Root() {
   const userInfo = useRecoilValue(userState);
   //로그인 되어있는지 확인
-  if (!userInfo) return <Navigate to={"/auth"} />;
+  if (!userInfo) {
+    return <Navigate to={"/auth"} />;
+  }
   return (
     <Wrapper>
       <TopBar />

@@ -5,10 +5,54 @@ import styled from "styled-components";
 import { chatsState, userState } from "../../Store/atom";
 import UserBadgeItem from "../userAvatar/UserBadgeItem";
 import UserListItem from "../userAvatar/UserListItem";
+import { HiOutlinePlusCircle } from "react-icons/hi";
 
-const ModalOverlay = styled.div``;
-const ModalContent = styled.div``;
-const Input = styled.input``;
+const H1 = styled.h1`
+  font-size: 30px;
+  font-weight: bold;
+  color: white;
+`;
+export const ModalOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1999999;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+const ModalContent = styled.div`
+  border-radius: 20px;
+  z-index: 20000000;
+  background: black;
+  width: 40vw;
+  height: 70vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+`;
+const Input = styled.input`
+  padding: 10px;
+  width: 80%;
+  display: block;
+  margin: 10px;
+  height: 50px;
+  border-radius: 10px;
+  border: none;
+`;
+const Button = styled.button`
+  border: none;
+  background: #f5bf19;
+  border-radius: 10px;
+  width: 80%;
+  height: 50px;
+  font-weight: bold;
+  font-size: 20px;
+  margin: 10px;
+`;
 const GroupChatModal = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [groupChatName, setGroupChatName] = useState<any>("");
@@ -79,19 +123,45 @@ const GroupChatModal = () => {
   };
   return (
     <>
-      <button onClick={() => setIsOpen(true)}>new group chat</button>
+      <button
+        onClick={() => setIsOpen(true)}
+        style={{
+          border: "none",
+          background: " #f5bf19",
+          borderRadius: "10px",
+          width: "3vw",
+          height: "3vw",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <HiOutlinePlusCircle size={26} />
+      </button>
       {isOpen ? (
-        <ModalOverlay>
-          <ModalContent>
-            <div>Create Group Chat</div>
-            <button onClick={onModalClose}>close</button>
-            <form>
+        <ModalOverlay onClick={() => setIsOpen(false)}>
+          <ModalContent
+            onClick={(e: any) => {
+              e.stopPropagation();
+            }}
+          >
+            <H1>채팅방 만들기</H1>
+            <form
+              style={{
+                width: "100%",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
               <Input
+                placeholder="채팅방 이름을 입력해주세요..."
                 value={groupChatName}
                 onChange={(e: any) => setGroupChatName(e.target.value)}
               />
               <Input
-                placeholder="Add Users"
+                placeholder="사용자 추가..."
                 value={search}
                 onChange={(e: any) => {
                   setSearch(e.target.value);
@@ -121,8 +191,20 @@ const GroupChatModal = () => {
                     />
                   ))
               )}
-              <button onClick={handleSubmit}>Create Chat</button>
             </form>
+            <div
+              style={{
+                width: "100%",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Button onClick={handleSubmit}>확인</Button>
+
+              <Button onClick={onModalClose}>닫기</Button>
+            </div>
           </ModalContent>
         </ModalOverlay>
       ) : null}

@@ -30,6 +30,9 @@ footer, header, hgroup, main, menu, nav, section {
 *[hidden] {
     display: none;
 }
+* {
+  box-sizing: border-box;
+}
 body {
   line-height: 1;
 }
@@ -52,18 +55,6 @@ a {
   text-decoration: none;
 }
 
-.topbar {
-	height: 50px;
-	background-color: white;
-	position: fixed;
-	top: 0;
-	width: 100%;
-	transition: background-color 0.3s ease-in-out;
-}
-
-.topbar.scrolled {
-	background-color: #212121;
-}
 .search-box {
   display: flex;
   align-items: center;
@@ -95,5 +86,22 @@ a {
 
 .search-box button[type="submit"]:hover {
   background-color: #e67e22;
+}
+
+
+
+.topbar {
+  width: 100vw;
+  height: 7vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 200;
+  background: black;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.5s ease;
 }
 `;

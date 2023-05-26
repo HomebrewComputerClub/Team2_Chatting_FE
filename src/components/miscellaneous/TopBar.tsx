@@ -1,7 +1,7 @@
-import { Button } from "@chakra-ui/button";
-import { useDisclosure } from "@chakra-ui/hooks";
-
+import { GiBeerStein } from "react-icons/gi";
 import { GoSearch } from "react-icons/go";
+
+import { AiOutlineSearch } from "react-icons/ai";
 import {
   Menu,
   MenuButton,
@@ -9,10 +9,9 @@ import {
   MenuItem,
   MenuList,
 } from "@chakra-ui/menu";
-import { BellIcon, ChevronDownIcon } from "@chakra-ui/icons";
 import { Avatar } from "@chakra-ui/avatar";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { useToast } from "@chakra-ui/toast";
 import ChatLoading from "../ChatLoading";
@@ -27,30 +26,50 @@ import {
   userState,
 } from "../../Store/atom";
 import styled from "styled-components";
-
-const Wrapper = styled.div`
-  width: 100vw;
-  height: 7vh;
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 200;
-  background: black;
-  color: white;
+import { MdNotifications } from "react-icons/md";
+import { CgProfile } from "react-icons/cg";
+import { ChevronDownIcon } from "@chakra-ui/icons";
+import { background, Button } from "@chakra-ui/react";
+const Logo = styled.div`
+  color: inherit;
   display: flex;
   justify-content: space-around;
   align-items: center;
+  margin: 20px;
+  cursor: pointer;
+  background-color: inherit;
+`;
+const H1 = styled.h1`
+  color: inherit;
+  display: block;
+  font-size: 30px;
+  font-family: "Lilita One", cursive;
+  margin: 10px;
+`;
+
+const Wrapper = styled.div`
+  display: flex;
+  align-items: "center";
 `;
 
 const ModalContent = styled.div`
   z-index: 20000000;
-  background: white;
+  background: black;
   width: 40vw;
   height: 70vh;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
   align-items: center;
+`;
+export const Buttons = styled.div`
+  border-radius: 10px;
+  height: 90%;
+  width: 15vw;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  background: #f5bf19;
 `;
 function TopBar() {
   const [search, setSearch] = useState("");
@@ -62,7 +81,6 @@ function TopBar() {
   const [notification, setNotification] = useRecoilState(notificationState);
   const [chats, setChats] = useRecoilState(chatsState);
   const toast = useToast();
-  const { isOpen, onOpen, onClose } = useDisclosure();
   const navigate = useNavigate();
 
   const logoutHandler = () => {
@@ -124,7 +142,7 @@ function TopBar() {
         setChats([data, ...chats]);
       setSelectedChat(data);
       setLoadingChat(false);
-      onClose();
+      setSearchModalOpen(false);
     } catch (error: any) {
       toast({
         title: "Error fetching the chat",
@@ -152,28 +170,38 @@ function TopBar() {
     setSearch(e.target.value);
   };
   return (
-    <Wrapper>
-      <button onClick={onSearchModalOpen}>사람 검색</button>
-      {searchModalOpen ? (
-        <ModalOverlay onClick={onSearchOverlayClick}>
-          <ModalContent onClick={onSearchContent}>
-            <h1>Search Users</h1>
-            <div>
-              <div>
-                <div className="search-box" style={{ width: "80%" }}>
-                  <input
-                    type="text"
-                    placeholder="Search..."
-                    onChange={onSearchInput}
-                    value={search}
-                  />
-                  <button onClick={handleSearch}>
-                    <GoSearch />
-                  </button>
-                </div>
+    <Wrapper className="topbar">
+      <Logo
+        onClick={() => {
+          navigate("/");
+        }}
+      >
+        <GiBeerStein size={32} style={{ color: "inherit" }} />
+        <H1>Homebrew</H1>
+      </Logo>
+      <Buttons>
+        <button
+          onClick={onSearchModalOpen}
+          style={{ background: "none", border: "none" }}
+        >
+          <AiOutlineSearch size={32} color="black" />
+        </button>
+        {searchModalOpen ? (
+          <ModalOverlay onClick={onSearchOverlayClick}>
+            <ModalContent onClick={onSearchContent}>
+              <div className="search-box" style={{ width: "80%" }}>
+                <input
+                  type="text"
+                  placeholder="Search..."
+                  onChange={onSearchInput}
+                  value={search}
+                />
+                <button onClick={handleSearch}>
+                  <GoSearch />
+                </button>
               </div>
               {loading ? (
-                <ChatLoading />
+                <h1>sadf</h1>
               ) : (
                 searchResult?.map((user: any) => (
                   <UserListItem
@@ -184,58 +212,60 @@ function TopBar() {
                 ))
               )}
               {loadingChat && <div>loading</div>}
-            </div>
-          </ModalContent>
-        </ModalOverlay>
-      ) : null}
-      <h1>Homebrew</h1>
-      <div>
-        <Menu>
-          <MenuButton p={1}>
-            <BellIcon fontSize="2xl" m={1} />
-          </MenuButton>
-          <MenuList pl={2}>
-            {!notification.length && "No New Messages"}
-            {notification
-              ? notification.map((notif: any) => (
-                  <MenuItem
-                    key={notif._id}
-                    onClick={() => {
-                      setSelectedChat(notif.chat);
-                      setNotification(
-                        notification.filter((n: any) => n !== notif)
-                      );
-                    }}
-                  >
-                    {notif.chat.isGroupChat
-                      ? `New Message in ${notif.chat.chatName}`
-                      : `New Message from ${getSender(
-                          userInfo,
-                          notif.chat.users
-                        )}`}
-                  </MenuItem>
-                ))
-              : null}
-          </MenuList>
-        </Menu>
-        <Menu>
-          <MenuButton as={Button} bg="white" rightIcon={<ChevronDownIcon />}>
-            <Avatar
-              size="sm"
-              cursor="pointer"
-              name={userInfo.name}
-              src={userInfo.pic}
-            />
-          </MenuButton>
-          <MenuList>
-            <ProfileModal user={userInfo}>
-              <MenuItem>My Profile</MenuItem>{" "}
-            </ProfileModal>
-            <MenuDivider />
-            <MenuItem onClick={logoutHandler}>Logout</MenuItem>
-          </MenuList>
-        </Menu>
-      </div>
+            </ModalContent>
+          </ModalOverlay>
+        ) : null}
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <Menu>
+            <MenuButton
+              p={1}
+              style={{
+                background: "none",
+                border: "none",
+                width: "3vw",
+                height: "3vw",
+              }}
+            >
+              <MdNotifications size={32} color="black" />
+            </MenuButton>
+            <MenuList pl={2}>
+              {!notification.length && "No New Messages"}
+              {notification
+                ? notification.map((notif: any) => (
+                    <MenuItem
+                      key={notif._id}
+                      onClick={() => {
+                        setSelectedChat(notif.chat);
+                        setNotification(
+                          notification.filter((n: any) => n !== notif)
+                        );
+                      }}
+                    >
+                      {notif.chat.isGroupChat
+                        ? `New Message in ${notif.chat.chatName}`
+                        : `New Message from ${getSender(
+                            userInfo,
+                            notif.chat.users
+                          )}`}
+                    </MenuItem>
+                  ))
+                : null}
+            </MenuList>
+          </Menu>
+          <Menu>
+            <MenuButton as={Button} bg="black" rightIcon={<ChevronDownIcon />}>
+              <img src={userInfo.pic} />
+            </MenuButton>
+            <MenuList>
+              <ProfileModal user={userInfo}>
+                <MenuItem>My Profile</MenuItem>{" "}
+              </ProfileModal>
+              <MenuDivider />
+              <MenuItem onClick={logoutHandler}>Logout</MenuItem>
+            </MenuList>
+          </Menu>
+        </div>
+      </Buttons>
     </Wrapper>
   );
 }

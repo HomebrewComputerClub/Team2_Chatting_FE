@@ -1,4 +1,3 @@
-import React from "react";
 import { Box } from "@chakra-ui/layout";
 import { useEffect, useState } from "react";
 import Chatbox from "../components/Chatbox";
@@ -8,17 +7,18 @@ import { useRecoilValue } from "recoil";
 import { userState } from "../Store/atom";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-const Wrapper = styled.div``;
+const Wrapper = styled.div`
+  background: #f5bf19;
+`;
 const ChatBoxWrapper = styled.div`
+  background: inherit;
   position: fixed;
-  top: 15vh;
-  left: 25vw;
+  top: 7vh;
+  left: 15vw;
   display: flex;
   justify-content: space-around;
-  background: pink;
-  height: 80vh;
-  width: 65vw;
-  border: 0.5px solid #111;
+  height: 93vh;
+  width: 85vw;
 `;
 const Chatpage = () => {
   const userInfo = useRecoilValue(userState);

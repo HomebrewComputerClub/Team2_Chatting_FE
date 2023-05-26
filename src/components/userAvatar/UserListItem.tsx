@@ -1,7 +1,14 @@
 import { Avatar } from "@chakra-ui/avatar";
 import { Box, Text } from "@chakra-ui/layout";
 import { useRecoilValue } from "recoil";
+import styled from "styled-components";
 import { userState } from "../../Store/atom";
+const Img = styled.img`
+  width: 3vw;
+  height: 3vw;
+  border: 1px solid #eeeeee;
+  border-radius: 5px;
+`;
 
 const UserListItem = ({ handleFunction }: any) => {
   const userInfo = useRecoilValue(userState);
@@ -16,6 +23,7 @@ const UserListItem = ({ handleFunction }: any) => {
         color: "white",
       }}
       w="100%"
+      h={"10vh"}
       alignItems="center"
       color="black"
       px={3}
@@ -23,20 +31,10 @@ const UserListItem = ({ handleFunction }: any) => {
       mb={2}
       borderRadius="lg"
     >
-      <Avatar
-        mr={2}
-        size="sm"
-        cursor="pointer"
-        name={userInfo.name}
-        src={userInfo.pic}
-      />
-      <Box>
-        <Text>{userInfo.name}</Text>
-        <Text fontSize="xs">
-          <b>Email : </b>
-          {userInfo.email}
-        </Text>
-      </Box>
+      <Img src={userInfo.pic} />
+      <div>
+        <h1>{userInfo.name}</h1>
+      </div>
     </Box>
   );
 };
