@@ -35,7 +35,6 @@ const Passwordfield = ({ control, name, setError }: Props) => {
 	};
 	return (
 		<TextField
-			id='outlined-basic'
 			variant='outlined'
 			size='small'
 			label={field.name}

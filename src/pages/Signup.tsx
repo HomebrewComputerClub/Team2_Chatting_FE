@@ -23,6 +23,7 @@ const FullScreen = styled.div`
 
 const Container = styled.div`
 	margin-top: 20px;
+	padding-top: 20px;
 	width: 350px;
 	height: 650px;
 	border: solid 1px rgb(219, 219, 219);
@@ -34,10 +35,11 @@ const Container = styled.div`
 const Title = styled.p`
 	font-size: 30px;
 	font-weight: 700;
+	margin-bottom: 20px;
 `;
 
 const dummy = {
-	status: 300,
+	status: 200,
 	data: {
 		memberId: 22,
 	},

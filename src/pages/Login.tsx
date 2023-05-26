@@ -11,6 +11,7 @@ import { setCookie } from '../utils/cookie';
 import moment from 'moment';
 import Emailfield from '../components/atoms/input/Emailfield';
 import ModalField from '../components/atoms/ModalField';
+import GoogleLoginButton from '../components/atoms/GoogleLoginButton';
 
 const dummy = {
 	status: 200,
@@ -43,6 +44,7 @@ const FullScreen = styled.div`
 
 const Container = styled.div`
 	margin-top: 20px;
+	padding-top: 20px;
 	width: 350px;
 	height: 650px;
 	border: solid 1px rgb(219, 219, 219);
@@ -54,6 +56,15 @@ const Container = styled.div`
 const Title = styled.p`
 	font-size: 30px;
 	font-weight: 700;
+	margin-bottom: 20px;
+`;
+
+const SocialLoginButton = styled.button`
+	border: none;
+	background-color: transparent;
+	padding: 0;
+	margin-top: 20px;
+	margin-bottom: 20px;
 `;
 const Login = () => {
 	const { handleSubmit, control, setError, getValues, setValue } = useForm<FormValues>();
@@ -65,6 +76,11 @@ const Login = () => {
 	const handleClose = () => setOpen(false);
 
 	const [auth, setAuth] = useRecoilState(authState);
+
+	// 카카오 로그인
+	const REST_API_KEY = '47430455fb390115140c2fdeb2b46a6b';
+	const REDIRECT_URI = 'http://localhost:3000/kakao';
+	const KAKAO_AUTH_URL = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
 
 	const onSubmitHandler: SubmitHandler<FormValues> = async (data) => {
 		console.log(data);
@@ -98,6 +114,10 @@ const Login = () => {
 			console.log('실패');
 		}
 	};
+
+	const kakaoLogin = () => {
+		window.location.href = KAKAO_AUTH_URL;
+	};
 	useEffect(() => {
 		console.log(auth);
 	}, [auth]);
@@ -118,6 +138,15 @@ const Login = () => {
 					<Passwordfield control={control} name='password' setError={setError} />
 					<input type='submit' />
 				</form>
+
+				<SocialLoginButton onClick={kakaoLogin}>
+					<img
+						alt='카카오 소셜 로그인'
+						style={{ height: '100%' }}
+						src={require('../../src/assets/images/KakaoLogin.png')}
+					/>
+				</SocialLoginButton>
+				<GoogleLoginButton />
 			</Container>
 		</FullScreen>
 	);
