@@ -1,7 +1,7 @@
 import { InternalAxiosRequestConfig } from "axios";
 import jwt_decode from "jwt-decode";
 import { useRecoilState } from "recoil";
-import authState from "../recoil/atoms/authState";
+import { userState } from "../Store/atom";
 import { getCookie, removeCookie } from "./cookie";
 
 const dummy = {
@@ -25,12 +25,12 @@ const Refresh = async (
   // 쿠키에 있는 리프레시 토큰 받아옴.
   const refreshToken = getCookie("refreshToken");
   // recoil에 있는 어세스 토큰 받아옴.
-  const [auth, setAuth] = useRecoilState(authState);
+  const [userInfo, setUserInfo] = useRecoilState(userState);
 
   // 어세스 토큰 있으면.
-  if (auth.accessToken) {
+  if (userInfo.accessToken) {
     // 복호화.
-    const decodedToken: DecodedToken = jwt_decode(auth.accessToken);
+    const decodedToken: DecodedToken = jwt_decode(userInfo.accessToken);
     // accessToken 유효기간 지났으면.
     if (Date.now() >= decodedToken.exp * 1000) {
       console.log("refresh");
@@ -38,7 +38,7 @@ const Refresh = async (
       // refreshToken 유효기간 지났으면.
       if (Date.now() >= decodedRefreshToken.exp * 1000) {
         console.log("logout");
-        setAuth({
+        setUserInfo({
           status: "invalid",
           accessToken: "",
         });
@@ -49,7 +49,7 @@ const Refresh = async (
         // const res = await axios.post();
         const res = dummy;
         if (res.status === 200) {
-          setAuth({
+          setUserInfo({
             status: "valid",
             accessToken: res.data.accessToken,
           });
@@ -65,7 +65,7 @@ const Refresh = async (
         // 정상 처리 안되었으면 로그아웃.
         else {
           console.log("logout");
-          setAuth({
+          setUserInfo({
             status: "invalid",
             accessToken: "",
           });
@@ -74,7 +74,7 @@ const Refresh = async (
     }
     // accessToken 유효기간 안지났으면.
     else {
-      config.headers.set("Authorization", `Bearer ${auth.accessToken}`);
+      config.headers.set("Authorization", `Bearer ${userInfo.accessToken}`);
     }
   }
 

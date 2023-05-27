@@ -7,7 +7,6 @@ import Login from "./pages/login";
 import LoginHome from "./pages/loginhome";
 import ProtectedRoute from "./pages/protectedroute";
 import Signup from "./pages/signup";
-import Root from "./Root";
 
 export const router = createBrowserRouter([
   {
@@ -27,25 +26,15 @@ export const router = createBrowserRouter([
         element: <KakaoAuth />,
       },
       {
-        path: "must",
-        element: <ProtectedRoute />,
-        children: [
-          {
-            path: "login",
-            element: <LoginHome />,
-          },
-        ],
-      },
-      {
         path: "/",
-        element: <Root />,
+        element: <ProtectedRoute />,
         children: [
           {
             path: "chats",
             element: <Chatpage />,
           },
           {
-            path: "home",
+            path: "/",
             element: <HomePage />,
           },
         ],

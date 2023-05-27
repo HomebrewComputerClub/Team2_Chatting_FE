@@ -10,7 +10,7 @@ interface Props {
 }
 
 const Textfield = ({ control, name, setError }: Props) => {
-  const { field, fieldState, formState } = useController({
+  const { field, fieldState } = useController({
     name,
     control,
     rules: { required: "Required" },

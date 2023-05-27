@@ -1,17 +1,39 @@
+import { userInfo } from "os";
 import React from "react";
 import { Navigate, Outlet } from "react-router-dom";
-import { useRecoilState } from "recoil";
-import authState from "../recoil/atoms/authState";
+import { useRecoilState, useRecoilValue } from "recoil";
+import styled from "styled-components";
+import TopBar from "../components/miscellaneous/TopBar";
+import Navbar from "../components/molecules/Navbar";
+import { userState } from "../Store/atom";
 
+const Wrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 2000px;
+`;
+const Content = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
 const ProtectedRoute = () => {
-  const [auth, setAuth] = useRecoilState(authState);
+  const userInfo = useRecoilValue(userState);
 
   // 로그인 상태가 아니라면.
-  if (auth?.status !== "valid") {
+  if (userInfo?.status !== "valid") {
     return <Navigate to="/login" />;
   }
   // 로그인 상태면.
-  return <Outlet />;
+  return (
+    <Wrapper>
+      <TopBar />
+      <Content>
+        <Navbar />
+        <Outlet />
+      </Content>
+    </Wrapper>
+  );
 };
 
 export default ProtectedRoute;

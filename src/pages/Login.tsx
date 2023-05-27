@@ -3,12 +3,12 @@ import styled from "styled-components";
 import { useForm, SubmitHandler } from "react-hook-form";
 import Passwordfield from "../components/atoms/input/Passwordfield";
 import { useRecoilState } from "recoil";
-import authState from "../recoil/atoms/authState";
 import { setCookie } from "../utils/cookie";
 import moment from "moment";
 import Emailfield from "../components/atoms/input/Emailfield";
 import ModalField from "../components/atoms/ModalField";
 import GoogleLoginButton from "../components/atoms/GoogleLoginButton";
+import { userState } from "../Store/atom";
 
 const dummy = {
   status: 200,
@@ -73,7 +73,7 @@ const Login = () => {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-  const [auth, setAuth] = useRecoilState(authState);
+  const [userInfo, setUserInfo] = useRecoilState(userState);
 
   // 카카오 로그인
   const REST_API_KEY = "47430455fb390115140c2fdeb2b46a6b";
@@ -92,7 +92,7 @@ const Login = () => {
 		*/
     if (res.status === 200) {
       // access token 설정.
-      setAuth({ status: "valid", accessToken: res.data.accessToken });
+      setUserInfo({ status: "valid", accessToken: res.data.accessToken });
       // 쿠키 설정 -> 이건 나중에 서버가 해줌. 1분뒤에 없어지는 쿠키.
       setCookie("refreshToken", "abc123", {
         path: "/",
@@ -116,9 +116,6 @@ const Login = () => {
   const kakaoLogin = () => {
     window.location.href = KAKAO_AUTH_URL;
   };
-  useEffect(() => {
-    console.log(auth);
-  }, [auth]);
   return (
     <FullScreen>
       <ModalField
