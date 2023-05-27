@@ -1,8 +1,6 @@
-import { Box } from "@chakra-ui/layout";
 import { useEffect, useState } from "react";
 import Chatbox from "../components/Chatbox";
 import MyChats from "../components/MyChats";
-import TopBar from "../components/miscellaneous/TopBar";
 import { useRecoilValue } from "recoil";
 import { userState } from "../Store/atom";
 import { useNavigate } from "react-router-dom";
