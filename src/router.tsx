@@ -1,11 +1,11 @@
 import { createBrowserRouter } from "react-router-dom";
 import App from "./App";
-import Chatpage from "./pages/chatpage";
-import HomePage from "./pages/hompage";
-import KakaoAuth from "./pages/kakaoauth";
-import Login from "./pages/login";
-import ProtectedRoute from "./pages/protectedroute";
-import Signup from "./pages/signup";
+import Chatpage from "./chatpage";
+import HomePage from "./hompage";
+import KakaoAuth from "./kakaoauth";
+import Login from "./login";
+import ProtectedRoute from "./protectedroute";
+import Signup from "./signup";
 
 export const router = createBrowserRouter([
   {
