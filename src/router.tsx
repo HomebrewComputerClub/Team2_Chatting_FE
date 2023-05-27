@@ -4,7 +4,6 @@ import Chatpage from "./pages/chatpage";
 import HomePage from "./pages/hompage";
 import KakaoAuth from "./pages/kakaoauth";
 import Login from "./pages/login";
-import LoginHome from "./pages/loginhome";
 import ProtectedRoute from "./pages/protectedroute";
 import Signup from "./pages/signup";
 

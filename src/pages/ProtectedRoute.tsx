@@ -1,7 +1,6 @@
-import { userInfo } from "os";
 import React from "react";
 import { Navigate, Outlet } from "react-router-dom";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilValue } from "recoil";
 import styled from "styled-components";
 import TopBar from "../components/miscellaneous/TopBar";
 import Navbar from "../components/molecules/Navbar";
