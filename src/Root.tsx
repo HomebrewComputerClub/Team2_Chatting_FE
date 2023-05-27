@@ -18,9 +18,9 @@ const Content = styled.div`
 `;
 function Root() {
   const userInfo = useRecoilValue(userState);
-  //로그인 되어있는지 확인
+  // 로그인 되어있는지 확인
   if (!userInfo) {
-    return <Navigate to={"/auth"} />;
+    return <Navigate to={"/login"} />;
   }
   return (
     <Wrapper>

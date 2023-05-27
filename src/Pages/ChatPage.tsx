@@ -25,7 +25,7 @@ const Chatpage = () => {
 
   //로그인 되어있는지 확인
   useEffect(() => {
-    if (!userInfo) navigate("/auth");
+    if (!userInfo) navigate("/login");
   }, []);
 
   return (

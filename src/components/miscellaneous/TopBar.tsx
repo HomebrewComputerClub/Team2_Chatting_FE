@@ -85,7 +85,7 @@ function TopBar() {
 
   const logoutHandler = () => {
     localStorage.removeItem("userInfo");
-    navigate("/auth");
+    navigate("/login");
   };
 
   const handleSearch = async () => {
