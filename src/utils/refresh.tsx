@@ -1,4 +1,4 @@
-import { AxiosRequestConfig, InternalAxiosRequestConfig } from "axios";
+import { InternalAxiosRequestConfig } from "axios";
 import jwt_decode from "jwt-decode";
 import { useRecoilState } from "recoil";
 import authState from "../recoil/atoms/authState";

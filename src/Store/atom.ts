@@ -1,5 +1,4 @@
-import React from "react";
-import { atom, useRecoilState } from "recoil";
+import { atom } from "recoil";
 import { recoilPersist } from "recoil-persist";
 // Define the atom to hold the JWT token
 //2. sessionStorage에 저장하고 싶은 경우
@@ -9,7 +8,7 @@ const sessionStorage =
 
 const { persistAtom } = recoilPersist({
   key: "userInfo",
-  storage: localStorage,
+  storage: sessionStorage,
 });
 
 //Recoil-persist를 적용시키려면 아래의 effects_UNSTABLE을 적어주어야 한다.

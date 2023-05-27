@@ -9,12 +9,10 @@ import {
   MenuItem,
   MenuList,
 } from "@chakra-ui/menu";
-import { Avatar } from "@chakra-ui/avatar";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import axios from "axios";
 import { useToast } from "@chakra-ui/toast";
-import ChatLoading from "../ChatLoading";
 import ProfileModal, { ModalOverlay } from "./ProfileModal";
 import { getSender } from "../../config/ChagLogics";
 import UserListItem from "../userAvatar/UserListItem";
