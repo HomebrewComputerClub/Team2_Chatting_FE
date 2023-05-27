@@ -16,7 +16,7 @@ import { useToast } from "@chakra-ui/toast";
 import ProfileModal, { ModalOverlay } from "./ProfileModal";
 import { getSender } from "../../config/ChagLogics";
 import UserListItem from "../userAvatar/UserListItem";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import {
   chatsState,
   notificationState,
@@ -25,9 +25,9 @@ import {
 } from "../../Store/atom";
 import styled from "styled-components";
 import { MdNotifications } from "react-icons/md";
-import { CgProfile } from "react-icons/cg";
 import { ChevronDownIcon } from "@chakra-ui/icons";
-import { background, Button } from "@chakra-ui/react";
+import { Button } from "@chakra-ui/react";
+import client from "../../utils/network";
 const Logo = styled.div`
   color: inherit;
   display: flex;
@@ -75,15 +75,21 @@ function TopBar() {
   const [loading, setLoading] = useState(false);
   const [loadingChat, setLoadingChat] = useState(false);
   const setSelectedChat = useSetRecoilState(selectedChatState);
-  const userInfo = useRecoilValue(userState);
   const [notification, setNotification] = useRecoilState(notificationState);
   const [chats, setChats] = useRecoilState(chatsState);
   const toast = useToast();
   const navigate = useNavigate();
+  const [userInfo, setUserInfo] = useRecoilState(userState);
 
-  const logoutHandler = () => {
-    localStorage.removeItem("userInfo");
-    navigate("/login");
+  const logoutHandler = async () => {
+    // navigate("/login");
+    //logout api 요청해서 refresh token 삭제
+    try {
+      const { data } = await client.post(`members/logout`, {});
+      setUserInfo(null);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const handleSearch = async () => {

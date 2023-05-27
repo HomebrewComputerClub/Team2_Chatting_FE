@@ -1,9 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useRecoilState } from "recoil";
-import { setCookie } from "../utils/cookie";
-import moment from "moment";
 import Emailfield from "../components/atoms/Emailfield";
 import ModalField from "../components/atoms/ModalField";
 import GoogleLoginButton from "../components/atoms/GoogleLoginButton";
@@ -11,12 +9,12 @@ import { userState } from "../Store/atom";
 import Passwordfield from "../components/atoms/Passwordfield";
 import { LogInApi } from "../remote/auth";
 
-const dummy = {
-  status: 200,
-  data: {
-    accessToken: "12345",
-  },
-};
+// const dummy = {
+//   status: 200,
+//   data: {
+//     accessToken: "12345",
+//   },
+// };
 
 const label = {
   success: {
@@ -90,14 +88,14 @@ const Login = () => {
     });
     if (res.status === 200) {
       // access token 설정.
-      setUserInfo({ status: "valid", accessToken: res.data.accessToken });
-      // 쿠키 설정 -> 이건 나중에 서버가 해줌. 1분뒤에 없어지는 쿠키.
-      setCookie("refreshToken", "abc123", {
-        path: "/",
-        secure: true,
-        sameSite: "none",
-        expires: moment().add("1", "m").toDate(),
-      });
+      setUserInfo(userInfo);
+      // // 쿠키 설정 -> 이건 나중에 서버가 해줌. 1분뒤에 없어지는 쿠키.
+      // setCookie("refreshToken", "abc123", {
+      //   path: "/",
+      //   secure: true,
+      //   sameSite: "none",
+      //   expires: moment().add("1", "m").toDate(),
+      // });
 
       // API 요청하는 콜마다 헤더에 accessToken 담아 보내도록 설정.
       // axios.defaults.headers.common.Authorization = `Bearer ${res.data.accessToken}`;

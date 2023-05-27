@@ -6,6 +6,8 @@ import ModalField from "../components/atoms/ModalField";
 import Textfield from "../components/atoms/Textfield";
 import Passwordfield from "../components/atoms/Passwordfield";
 import { SignUpApi } from "../remote/auth";
+import { useRecoilState } from "recoil";
+import { userState } from "../Store/atom";
 
 export interface FormValues {
   password: string;
@@ -63,6 +65,7 @@ const Signup = () => {
   const [error50x, setError50x] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  const [userInfo, setUserInfo] = useRecoilState(userState);
 
   const { handleSubmit, control, setError, getValues, setValue } =
     useForm<FormValues>();
@@ -92,6 +95,7 @@ const Signup = () => {
       // 회원가입 성공
       if (res?.status === 200) {
         console.log("회원가입 성공");
+        setUserInfo(res.data);
         handleOpen();
       } else {
         setError50x(true);
