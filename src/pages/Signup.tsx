@@ -3,8 +3,9 @@ import styled from "styled-components";
 import { useForm, SubmitHandler } from "react-hook-form";
 import Emailfield from "../components/atoms/Emailfield";
 import ModalField from "../components/atoms/ModalField";
-import Passwordfield from "../components/atoms/Passwordfield";
 import Textfield from "../components/atoms/Textfield";
+import Passwordfield from "../components/atoms/Passwordfield";
+import { SignUpApi } from "../remote/auth";
 
 export interface FormValues {
   password: string;
@@ -82,23 +83,21 @@ const Signup = () => {
     }
     // 비밀번호는 맞아.
     else {
-      /*
-			const res = await SignUpApi({
-				email: data.email,
-				password: data.password,
-				name: data.name,
-			});
-			*/
-      const res = dummy;
+      console.log("asdfasdfsadf");
+      const res = await SignUpApi({
+        email: data.email,
+        password: data.password,
+        name: data.name,
+      });
       // 회원가입 성공
-      if (res.status === 200) {
+      if (res?.status === 200) {
         console.log("회원가입 성공");
         handleOpen();
       } else {
         setError50x(true);
         console.log("회원가입 실패");
         handleOpen();
-        console.log(res.data.memberId);
+        console.log(res?.data.memberId);
       }
     }
   };

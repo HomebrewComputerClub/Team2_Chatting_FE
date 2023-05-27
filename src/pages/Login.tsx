@@ -9,6 +9,7 @@ import ModalField from "../components/atoms/ModalField";
 import GoogleLoginButton from "../components/atoms/GoogleLoginButton";
 import { userState } from "../Store/atom";
 import Passwordfield from "../components/atoms/Passwordfield";
+import { LogInApi } from "../remote/auth";
 
 const dummy = {
   status: 200,
@@ -81,15 +82,12 @@ const Login = () => {
   const KAKAO_AUTH_URL = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
 
   const onSubmitHandler: SubmitHandler<FormValues> = async (data) => {
-    console.log(data);
+    console.log("login");
 
-    const res = dummy;
-    /*
-		const res = await LogInApi({
-			email: data.email,
-			password: data.password,
-		});
-		*/
+    const res = await LogInApi({
+      email: data.email,
+      password: data.password,
+    });
     if (res.status === 200) {
       // access token 설정.
       setUserInfo({ status: "valid", accessToken: res.data.accessToken });

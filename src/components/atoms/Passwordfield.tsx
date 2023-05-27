@@ -2,8 +2,7 @@ import React, { FC, useEffect, useState } from "react";
 import { IconButton, InputAdornment, TextField } from "@mui/material";
 import { useController, UseFormSetError } from "react-hook-form";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { FormValues } from "../../../pages/signup";
-
+import { FormValues } from "../../pages/signup";
 interface Props {
   control: any;
   name: string;
