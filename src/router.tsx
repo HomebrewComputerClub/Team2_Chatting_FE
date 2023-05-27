@@ -1,14 +1,14 @@
 import { createBrowserRouter } from "react-router-dom";
 import App from "./App";
-import Chatpage from "./pages/ChatPage";
-import AuthPage from "./pages/AuthPage";
-import HomePage from "./pages/HomePage";
+import Chatpage from "./Pages/ChatPage";
+import AuthPage from "./Pages/AuthPage";
+import HomePage from "./Pages/HomePage";
 import Root from "./Root";
-import Login from "./pages/Login";
-import ProtectedRoute from "./pages/ProtectedRoute";
-import LoginHome from "./pages/LoginHome";
-import KakaoAuth from "./pages/KakaoAuth";
-import Signup from "./pages/Signup";
+import Login from "./Pages/Login";
+import ProtectedRoute from "./Pages/ProtectedRoute";
+import LoginHome from "./Pages/LoginHome";
+import KakaoAuth from "./Pages/KakaoAuth";
+import Signup from "./Pages/Signup";
 
 export const router = createBrowserRouter([
   {

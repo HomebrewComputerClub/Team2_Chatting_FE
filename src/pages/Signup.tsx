@@ -4,9 +4,7 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import Emailfield from "../components/atoms/input/Emailfield";
 import Textfield from "../components/atoms/input/Textfield";
 import Passwordfield from "../components/atoms/input/Passwordfield";
-import { SignUpApi } from "../remote/auth";
 import ModalField from "../components/atoms/ModalField";
-import { useNavigate } from "react-router-dom";
 
 export interface FormValues {
   password: string;
