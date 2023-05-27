@@ -1,7 +1,7 @@
 import React, { FC, useEffect } from "react";
 import { TextField } from "@mui/material";
 import { useController, UseFormSetError } from "react-hook-form";
-import { FormValues } from "../../../pages/signup";
+import { FormValues } from "../../pages/signup";
 
 interface Props {
   control: any;

@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { useForm, SubmitHandler } from "react-hook-form";
-import Emailfield from "../components/atoms/input/Emailfield";
-import Textfield from "../components/atoms/input/Textfield";
-import Passwordfield from "../components/atoms/input/Passwordfield";
+import Emailfield from "../components/atoms/Emailfield";
 import ModalField from "../components/atoms/ModalField";
+import Passwordfield from "../components/atoms/Passwordfield";
+import Textfield from "../components/atoms/Textfield";
 
 export interface FormValues {
   password: string;
