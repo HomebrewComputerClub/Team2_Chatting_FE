@@ -19,7 +19,7 @@ import {
 import axios from "axios";
 import { useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { selectedChatState, userState } from "../../Store/atom";
+import { selectedChatState, tokenState, userState } from "../../Store/atom";
 import UserBadgeItem from "../userAvatar/UserBadgeItem";
 import UserListItem from "../userAvatar/UserListItem";
 
@@ -38,6 +38,7 @@ const UpdateGroupChatModal = ({
 
   const [selectedChat, setSelectedChat] = useRecoilState(selectedChatState);
   const userInfo = useRecoilValue(userState);
+  const accessToken = useRecoilValue(tokenState);
 
   const handleSearch = async (query: any) => {
     setSearch(query);
@@ -49,7 +50,7 @@ const UpdateGroupChatModal = ({
       setLoading(true);
       const config = {
         headers: {
-          Authorization: `Bearer ${userInfo.token}`,
+          Authorization: `Bearer ${accessToken}`,
         },
       };
       const { data } = await axios.get(`/api/user?search=${search}`, config);
@@ -76,7 +77,7 @@ const UpdateGroupChatModal = ({
       setRenameLoading(true);
       const config = {
         headers: {
-          Authorization: `Bearer ${userInfo.token}`,
+          Authorization: `Bearer ${accessToken}`,
         },
       };
       const { data } = await axios.put(
@@ -134,7 +135,7 @@ const UpdateGroupChatModal = ({
       setLoading(true);
       const config = {
         headers: {
-          Authorization: `Bearer ${userInfo.token}`,
+          Authorization: `Bearer ${accessToken}`,
         },
       };
       const { data } = await axios.put(
@@ -182,7 +183,7 @@ const UpdateGroupChatModal = ({
       setLoading(true);
       const config = {
         headers: {
-          Authorization: `Bearer ${userInfo.token}`,
+          Authorization: `Bearer ${accessToken}`,
         },
       };
       const { data } = await axios.put(

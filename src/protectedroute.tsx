@@ -20,9 +20,9 @@ const ProtectedRoute = () => {
   const userInfo = useRecoilValue(userState);
 
   // 로그인 상태가 아니라면.
-  if (userInfo?.status !== "valid") {
-    return <Navigate to="/login" />;
-  }
+  // if (!userInfo) {
+  //   return <Navigate to="/login" />;
+  // }
   // 로그인 상태면.
   return (
     <Wrapper>

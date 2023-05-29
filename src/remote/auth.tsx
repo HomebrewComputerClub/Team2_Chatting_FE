@@ -9,6 +9,7 @@ export async function LogInApi(data: any) {
 }
 
 export async function SignUpApi(data: any) {
+  console.log("signup data from api", data);
   console.log("signup");
   return await client
     .post("/members/signup", data, { withCredentials: true })

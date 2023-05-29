@@ -1,5 +1,6 @@
 import { GiBeerStein } from "react-icons/gi";
 import { GoSearch } from "react-icons/go";
+import jwt_decode from "jwt-decode";
 
 import { AiOutlineSearch } from "react-icons/ai";
 import {
@@ -10,7 +11,7 @@ import {
   MenuList,
 } from "@chakra-ui/menu";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { useToast } from "@chakra-ui/toast";
 import ProfileModal, { ModalOverlay } from "./ProfileModal";
@@ -21,6 +22,7 @@ import {
   chatsState,
   notificationState,
   selectedChatState,
+  tokenState,
   userState,
 } from "../../Store/atom";
 import styled from "styled-components";
@@ -42,6 +44,13 @@ const H1 = styled.h1`
   display: block;
   font-size: 30px;
   font-family: "Lilita One", cursive;
+  margin: 10px;
+`;
+const Img = styled.img`
+  width: 3vw;
+  height: 3vw;
+  border: 1px solid #eeeeee;
+  border-radius: 5px;
   margin: 10px;
 `;
 
@@ -80,13 +89,40 @@ function TopBar() {
   const toast = useToast();
   const navigate = useNavigate();
   const [userInfo, setUserInfo] = useRecoilState(userState);
+  const [accessToken, setAccessToken] = useRecoilState(tokenState);
 
+  //remain
+  const remainApi = async () => {
+    try {
+      const res = await client.get(`members/loginremain`, {
+        withCredentials: true,
+      });
+      // 회원가입 성공
+      if (res?.status === 200) {
+        console.log("회원가입 성공");
+        const token = res.headers.authorization;
+        setAccessToken(token);
+
+        setUserInfo(jwt_decode(token));
+      } else {
+        console.log("회원가입 실패");
+        console.log(res?.data.memberId);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  useEffect(() => {
+    remainApi();
+  }, []);
+  console.log("userInfo", userInfo);
   const logoutHandler = async () => {
     // navigate("/login");
     //logout api 요청해서 refresh token 삭제
     try {
       const { data } = await client.post(`members/logout`, {});
       setUserInfo(null);
+      setAccessToken(null);
     } catch (err) {
       console.log(err);
     }
@@ -109,7 +145,7 @@ function TopBar() {
 
       const config = {
         headers: {
-          Authorization: `Bearer ${userInfo.token}`,
+          Authorization: `Bearer ${accessToken}`,
         },
       };
 
@@ -137,7 +173,7 @@ function TopBar() {
       const config = {
         headers: {
           "Content-type": "application/json",
-          Authorization: `Bearer ${userInfo.token}`,
+          Authorization: `Bearer ${accessToken}`,
         },
       };
       const { data } = await axios.post(`/api/chat`, { userId }, config);
@@ -258,12 +294,12 @@ function TopBar() {
           </Menu>
           <Menu>
             <MenuButton as={Button} bg="black" rightIcon={<ChevronDownIcon />}>
-              <img src={userInfo.pic} />
+              <Img src={userInfo?.pic} />
             </MenuButton>
             <MenuList>
-              <ProfileModal user={userInfo}>
+              {/* <ProfileModal user={userInfo}>
                 <MenuItem>My Profile</MenuItem>{" "}
-              </ProfileModal>
+              </ProfileModal> */}
               <MenuDivider />
               <MenuItem onClick={logoutHandler}>Logout</MenuItem>
             </MenuList>

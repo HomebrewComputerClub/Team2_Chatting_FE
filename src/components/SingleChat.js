@@ -10,7 +10,12 @@ import ScrollableChat from "./ScrollableChat";
 import io from "socket.io-client";
 import UpdateGroupChatModal from "./miscellaneous/UpdateGroupChatModal";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { notificationState, selectedChatState, userState } from "../Store/atom";
+import {
+  notificationState,
+  selectedChatState,
+  tokenState,
+  userState,
+} from "../Store/atom";
 import styled from "styled-components";
 const ENDPOINT = "http://localhost:8000";
 var socket, selectedChatCompare;
@@ -36,6 +41,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
   const [selectedChat, setSelectedChat] = useRecoilState(selectedChatState);
   const userInfo = useRecoilValue(userState);
+  const accessToken = useRecoilState(tokenState);
   const [notification, setNotification] = useRecoilState(notificationState);
   const fetchMessages = async () => {
     if (!selectedChat) return;
@@ -43,7 +49,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     try {
       const config = {
         headers: {
-          Authorization: `Bearer ${userInfo.token}`,
+          Authorization: `Bearer ${accessToken}`,
         },
       };
 
@@ -76,7 +82,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         const config = {
           headers: {
             "Content-type": "application/json",
-            Authorization: `Bearer ${userInfo.token}`,
+            Authorization: `Bearer ${accessToken}`,
           },
         };
         setNewMessage("");

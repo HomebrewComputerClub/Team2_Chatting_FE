@@ -2,13 +2,13 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useRecoilState } from "recoil";
-import { userState } from "./Store/atom";
+import { tokenState, userState } from "./Store/atom";
 import { LogInApi } from "./remote/auth";
 import ModalField from "./components/molecules/ModalField";
 import Emailfield from "./components/molecules/Emailfield";
 import Passwordfield from "./components/molecules/Passwordfield";
 import GoogleLoginButton from "./components/molecules/GoogleLoginButton";
-
+import jwt_decode from "jwt-decode";
 // const dummy = {
 //   status: 200,
 //   data: {
@@ -73,6 +73,7 @@ const Login = () => {
   const handleClose = () => setOpen(false);
 
   const [userInfo, setUserInfo] = useRecoilState(userState);
+  const [accessToken, setAccessToken] = useRecoilState(tokenState);
 
   // 카카오 로그인
   const REST_API_KEY = "47430455fb390115140c2fdeb2b46a6b";
@@ -86,9 +87,13 @@ const Login = () => {
       email: data.email,
       password: data.password,
     });
+    console.log(res);
     if (res.status === 200) {
       // access token 설정.
-      setUserInfo(userInfo);
+      const token = res.headers.authorization;
+      setAccessToken(token);
+      setUserInfo(jwt_decode(token));
+
       // // 쿠키 설정 -> 이건 나중에 서버가 해줌. 1분뒤에 없어지는 쿠키.
       // setCookie("refreshToken", "abc123", {
       //   path: "/",
@@ -107,11 +112,25 @@ const Login = () => {
       handleOpen();
       console.log("실패");
     }
+    // //remain
+    // try {
+    //   const response = await client.post(
+    //     `members/loginremain`,
+    //     {},
+    //     { withCredentials: true }
+    //   );
+    //   console.log("remain", response);
+    // } catch (err) {
+    //   console.log(err);
+    // }
   };
 
+  console.log("decode", userInfo);
   const kakaoLogin = () => {
     window.location.href = KAKAO_AUTH_URL;
   };
+
+  console.log("userInfo", userInfo);
   return (
     <FullScreen>
       <ModalField

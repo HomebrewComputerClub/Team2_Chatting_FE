@@ -2,12 +2,13 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useRecoilState } from "recoil";
-import { userState } from "./Store/atom";
-import { SignUpApi } from "./remote/auth";
+import { tokenState, userState } from "./Store/atom";
+import { LogInApi, SignUpApi } from "./remote/auth";
 import ModalField from "./components/molecules/ModalField";
 import Emailfield from "./components/molecules/Emailfield";
 import Passwordfield from "./components/molecules/Passwordfield";
 import Textfield from "./components/molecules/Textfield";
+import jwt_decode from "jwt-decode";
 
 export interface FormValues {
   password: string;
@@ -16,6 +17,7 @@ export interface FormValues {
   name: string;
   phone: string;
   univ: string;
+  pic: string;
 }
 const FullScreen = styled.div`
   display: flex;
@@ -66,11 +68,15 @@ const Signup = () => {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const [userInfo, setUserInfo] = useRecoilState(userState);
+  const [accessToken, setAccessToken] = useRecoilState(tokenState);
+  const [pic, setPic] = useState();
+  const [picLoading, setPicLoading] = useState(false);
 
-  const { handleSubmit, control, setError, getValues, setValue } =
+  const { handleSubmit, control, setError, getValues, setValue, register } =
     useForm<FormValues>();
 
   const onSubmitHandler: SubmitHandler<FormValues> = async (data) => {
+    setPicLoading(true);
     console.log(data);
     // 패스워드 확인.
     if (getValues("password") !== getValues("password_confirm")) {
@@ -83,6 +89,7 @@ const Signup = () => {
         type: "passwordMismatch",
         message: "password mismatch",
       });
+      setPicLoading(false);
     }
     // 비밀번호는 맞아.
     else {
@@ -91,11 +98,26 @@ const Signup = () => {
         email: data.email,
         password: data.password,
         name: data.name,
+        pic,
       });
       // 회원가입 성공
       if (res?.status === 200) {
         console.log("회원가입 성공");
-        setUserInfo(res.data);
+
+        setPicLoading(false);
+        try {
+          const response = await LogInApi({
+            email: data.email,
+            password: data.password,
+          });
+          const token = res.headers.authorization;
+          setAccessToken(token);
+
+          setUserInfo(jwt_decode(token));
+        } catch (err) {
+          console.log(err);
+        }
+
         handleOpen();
       } else {
         setError50x(true);
@@ -103,6 +125,38 @@ const Signup = () => {
         handleOpen();
         console.log(res?.data.memberId);
       }
+    }
+  };
+  const postDetails = (pics: any) => {
+    setPicLoading(true);
+    if (pics === undefined) {
+      console.log("pic == undefined");
+      return;
+    }
+    console.log("pics", pics);
+    if (pics.type === "image/jpeg" || pics.type === "image/png") {
+      const data = new FormData();
+      data.append("file", pics);
+      data.append("upload_preset", "mern-chat");
+      data.append("cloud_name", "dql4ynp7j");
+      fetch("https://api.cloudinary.com/v1_1/dql4ynp7j/image/upload", {
+        method: "post",
+        body: data,
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          setPic(data.url.toString());
+          console.log(data.url.toString());
+          setPicLoading(false);
+        })
+        .catch((err) => {
+          console.log(err);
+          setPicLoading(false);
+        });
+    } else {
+      console.log("please select another image");
+      setPicLoading(false);
+      return;
     }
   };
   return (
@@ -132,6 +186,13 @@ const Signup = () => {
           <Textfield control={control} name="name" setError={setError} />
           <Textfield control={control} name="phone" setError={setError} />
           <Textfield control={control} name="univ" setError={setError} />
+          <label>Upload your Picture</label>
+          <input value={pic} {...register("pic")} />
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e: any) => postDetails(e.target.files[0])}
+          />
           <input type="submit" />
         </form>
       </Container>

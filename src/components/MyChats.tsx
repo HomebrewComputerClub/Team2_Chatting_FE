@@ -5,7 +5,12 @@ import { getSender } from "../config/ChagLogics";
 import ChatLoading from "./ChatLoading";
 import GroupChatModal from "./miscellaneous/GroupChatModal";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { chatsState, selectedChatState, userState } from "../Store/atom";
+import {
+  chatsState,
+  selectedChatState,
+  tokenState,
+  userState,
+} from "../Store/atom";
 import styled from "styled-components";
 
 const H1 = styled.h1`
@@ -22,6 +27,8 @@ const Img1 = styled.img`
 const MyChats = ({ fetchAgain }: any) => {
   const [selectedChat, setSelectedChat] = useRecoilState(selectedChatState);
   const userInfo = useRecoilValue(userState);
+  const [accessToken, setAccessToken] = useRecoilState(tokenState);
+
   const [chats, setChats] = useRecoilState(chatsState);
 
   const toast = useToast();
@@ -31,7 +38,7 @@ const MyChats = ({ fetchAgain }: any) => {
     try {
       const config = {
         headers: {
-          Authorization: `Bearer ${userInfo.token}`,
+          Authorization: `Bearer ${accessToken}`,
         },
       };
 

@@ -18,6 +18,11 @@ export const userState = atom<any>({
   // effects_UNSTABLE: [persistAtom],
 });
 
+export const tokenState = atom<any>({
+  key: "tokenState",
+  default: null,
+});
+
 // Define the atom to hold the login status
 export const loggedInAtom = atom({
   key: "loggedInState",
