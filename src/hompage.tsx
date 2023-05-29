@@ -141,7 +141,7 @@ function HomePage() {
           
       - 고시생 커뮤니티
           
-          [코코볼](http://cocobol.site/)
+          [코코볼](https://cocobol.site/)
           
   
   ## 모집 대상

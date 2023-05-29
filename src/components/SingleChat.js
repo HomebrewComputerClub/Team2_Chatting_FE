@@ -1,13 +1,12 @@
 import { Spinner, useToast } from "@chakra-ui/react";
 import { getSender, getSenderFull } from "../config/ChagLogics";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import { AiOutlineSearch } from "react-icons/ai";
 import { RiSendPlane2Fill } from "react-icons/ri";
 import ProfileModal from "./miscellaneous/ProfileModal";
 import ScrollableChat from "./ScrollableChat";
-import io from "socket.io-client";
 import UpdateGroupChatModal from "./miscellaneous/UpdateGroupChatModal";
 import { useRecoilState, useRecoilValue } from "recoil";
 import {
@@ -17,8 +16,9 @@ import {
   userState,
 } from "../Store/atom";
 import styled from "styled-components";
-const ENDPOINT = "http://localhost:8000";
-var socket, selectedChatCompare;
+import * as StompJs from "@stomp/stompjs";
+
+var selectedChatCompare;
 
 const Button = styled.button`
   border: none;
@@ -31,6 +31,7 @@ const Button = styled.button`
   margin: 10px;
 `;
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
+  const client = useRef({});
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [newMessage, setNewMessage] = useState("");
@@ -62,7 +63,8 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       setMessages(data);
       setLoading(false);
 
-      socket.emit("join chat", selectedChat._id);
+      // socket.emit("join chat", selectedChat._id);
+      publishJoinedChat(selectedChat._id);
     } catch (error) {
       toast({
         title: "Error Occured!",
@@ -77,7 +79,8 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
   const sendMessage = async (event) => {
     if (event.key === "Enter" && newMessage) {
-      socket.emit("stop typing", selectedChat._id);
+      // socket.emit("stop typing", selectedChat._id);
+      publishStoptyping(selectedChat._id);
       try {
         const config = {
           headers: {
@@ -94,7 +97,8 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
           },
           config
         );
-        socket.emit("new message", data);
+        // socket.emit("new message", data);
+        publish(data);
         setMessages([...messages, data]);
       } catch (error) {
         toast({
@@ -109,14 +113,104 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     }
   };
 
-  useEffect(() => {
-    socket = io(ENDPOINT);
-    socket.emit("setup", userInfo);
-    socket.on("connected", () => setSocketConnected(true));
-    socket.on("typing", () => setIsTyping(true));
-    socket.on("stop typing", () => setIsTyping(false));
+  const subscribe = () => {
+    let roomId = localStorage.getItem("roomId");
+    client.current.subscribe("/direct/room/" + roomId, (body) => {
+      console.log("body" + body);
+      console.log("body.body" + body.body);
+      // const json_body = JSON.parse(body.body);
+      // console.log("got msg" + json_body);
+      // setChatList((_chat_list) => [..._chat_list, json_body]);
+      // socket.on("connected", () => setSocketConnected(true));
+      // socket.on("typing", () => setIsTyping(true));
+      // socket.on("stop typing", () => setIsTyping(false));
+    });
+    client.current.subscribe("/direct/room/typing" + roomId, (body) => {
+      setIsTyping(true);
+    });
+    client.current.subscribe("/direct/room/stoptyping" + roomId, (body) => {
+      setIsTyping(false);
+    });
+  };
 
-    // eslint-disable-next-line
+  const connect = async () => {
+    client.current = new StompJs.Client({
+      brokerURL: "wss://localhost:8088/api/ws",
+      onConnect: async () => {
+        console.log("success");
+        // await makeRoom();
+        // console.log("roomCreated:" + localStorage.getItem("roomId"));
+        // socket.on("connected", () => setSocketConnected(true));
+        // socket.on("typing", () => setIsTyping(true));
+        // socket.on("stop typing", () => setIsTyping(false));
+        setSocketConnected(true);
+        subscribe();
+      },
+    });
+    client.current.activate();
+  };
+
+  const publish = (chat) => {
+    console.log("pub called");
+    if (!client.current.connected) return;
+    console.log("have connection");
+    client.current.publish({
+      destination: "/pub/message/send/direct",
+      body: JSON.stringify({
+        type: "TALK",
+        roomId: localStorage.getItem("roomId"),
+        sender: "sirong",
+        detail: chat,
+      }),
+    });
+
+    setNewMessage("");
+  };
+
+  const publishUserInfo = (userInfo) => {
+    console.log("pub called");
+    if (!client.current.connected) return;
+    console.log("have connection");
+    client.current.publish({
+      destination: "/pub/message/send/direct",
+      body: JSON.stringify(userInfo),
+    });
+  };
+  const publishStoptyping = (roomId) => {
+    console.log("pub called");
+    if (!client.current.connected) return;
+    console.log("have connection");
+    client.current.publish({
+      destination: "/pub/message/send/stoptyping",
+      roomId,
+    });
+  };
+  const publishTyping = (roomId) => {
+    console.log("pub called");
+    if (!client.current.connected) return;
+    console.log("have connection");
+    client.current.publish({
+      destination: "/pub/message/send/typing",
+      roomId,
+    });
+  };
+  const publishJoinedChat = (roomId) => {
+    console.log("pub called");
+    if (!client.current.connected) return;
+    console.log("have connection");
+    client.current.publish({
+      destination: "/pub/joinedChat",
+      roomId,
+    });
+  };
+  useEffect(() => {
+    // socket = io(ENDPOINT);
+    // socket.emit("setup", userInfo);
+    publishUserInfo(userInfo);
+    // socket.on("connected", () => setSocketConnected(true));
+    // socket.on("typing", () => setIsTyping(true));
+    // socket.on("stop typing", () => setIsTyping(false));
+    connect();
   }, []);
 
   useEffect(() => {
@@ -126,21 +220,56 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     // eslint-disable-next-line
   }, [selectedChat]);
 
-  useEffect(() => {
-    socket.on("message recieved", (newMessageRecieved) => {
-      if (
-        !selectedChatCompare || // if chat is not selected or doesn't match current chat
-        selectedChatCompare._id !== newMessageRecieved.chat._id
-      ) {
-        if (!notification.includes(newMessageRecieved)) {
-          console.log("noti");
-          setNotification([newMessageRecieved, ...notification]);
-          setFetchAgain(!fetchAgain);
+  const subscribeMessage = () => {
+    //   socket.on("message recieved", (newMessageRecieved) => {
+    //     if (
+    //       !selectedChatCompare || // if chat is not selected or doesn't match current chat
+    //       selectedChatCompare._id !== newMessageRecieved.chat._id
+    //     ) {
+    //       if (!notification.includes(newMessageRecieved)) {
+    //         console.log("noti");
+    //         setNotification([newMessageRecieved, ...notification]);
+    //         setFetchAgain(!fetchAgain);
+    //       }
+    //     } else {
+    //       setMessages([...messages, newMessageRecieved]);
+    //     }
+    //   });
+    let roomId = localStorage.getItem("roomId");
+    client.current.subscribe(
+      "/direct/message/" + roomId,
+      (newMessageRecieved) => {
+        if (
+          !selectedChatCompare || // if chat is not selected or doesn't match current chat
+          selectedChatCompare._id !== newMessageRecieved.chat._id
+        ) {
+          if (!notification.includes(newMessageRecieved)) {
+            console.log("noti");
+            setNotification([newMessageRecieved, ...notification]);
+            setFetchAgain(!fetchAgain);
+          }
+        } else {
+          setMessages([...messages, newMessageRecieved]);
         }
-      } else {
-        setMessages([...messages, newMessageRecieved]);
       }
-    });
+    );
+  };
+  useEffect(() => {
+    //   socket.on("message recieved", (newMessageRecieved) => {
+    //     if (
+    //       !selectedChatCompare || // if chat is not selected or doesn't match current chat
+    //       selectedChatCompare._id !== newMessageRecieved.chat._id
+    //     ) {
+    //       if (!notification.includes(newMessageRecieved)) {
+    //         console.log("noti");
+    //         setNotification([newMessageRecieved, ...notification]);
+    //         setFetchAgain(!fetchAgain);
+    //       }
+    //     } else {
+    //       setMessages([...messages, newMessageRecieved]);
+    //     }
+    //   });
+    subscribeMessage();
   });
 
   const typingHandler = (e) => {
@@ -150,7 +279,8 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
     if (!typing) {
       setTyping(true);
-      socket.emit("typing", selectedChat._id);
+      // socket.emit("typing", selectedChat._id);
+      publishTyping(selectedChat._id);
     }
     let lastTypingTime = new Date().getTime();
     var timerLength = 3000;
@@ -158,7 +288,8 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       var timeNow = new Date().getTime();
       var timeDiff = timeNow - lastTypingTime;
       if (timeDiff >= timerLength && typing) {
-        socket.emit("stop typing", selectedChat._id);
+        // socket.emit("stop typing", selectedChat._id);
+        publishTyping(selectedChat._id);
         setTyping(false);
       }
     }, timerLength);
