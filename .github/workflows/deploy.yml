@@ -15,17 +15,17 @@ jobs:
 
       - name: Install yarn
         run: npm install -g yarn
-        
+
       - name: Install dependency
         run: yarn install
-          
+
       - name: Build
         run: yarn build
         env:
           CI: ""
 
       - name: zip create
-        run: zip -qq -r ./build-fe.zip ./fe/build
+        run: zip -qq -r ./build-fe.zip . -i ./fe/build
         shell: bash
 
       - name: Configure AWS credentials
@@ -53,4 +53,3 @@ jobs:
             --ec2-tag-filters Key=Name,Value=homebrew-chatting-ec2,Type=KEY_AND_VALUE
             --file-exists-behavior OVERWRITE
             --target-instances-tag-filters Key=Path,Value=/fe,Type=KEY_AND_VALUE
-
