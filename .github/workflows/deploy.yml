@@ -25,7 +25,7 @@ jobs:
           CI: ""
 
       - name: zip create
-        run: zip -qq -r ./build-fe.zip .
+        run: zip -qq -r ./build-fe.zip ./fe/build
         shell: bash
 
       - name: Configure AWS credentials
@@ -43,8 +43,14 @@ jobs:
           aws s3 cp --region ap-northeast-2 ./build-fe.zip s3://chatting-fe-bucket/build-fe.zip
 
       - name: Code Deploy
-        run: aws deploy create-deployment
-          --deployment-config-name CodeDeployDefault.AllAtOnce
-          --application-name chatting-code        
-          --deployment-group-name chatting-fe-server
-          --s3-location bucket=chatting-fe-bucket,key=build-fe.zip,bundleType=zip
+        run: |
+          aws deploy create-deployment
+            --deployment-config-name CodeDeployDefault.AllAtOnce
+            --application-name chatting-code        
+            --deployment-group-name chatting-fe-server
+            --s3-location bucket=chatting-fe-bucket,key=build-fe.zip,bundleType=zip
+            --deployment-style deploymentType=IN_PLACE
+            --ec2-tag-filters Key=Name,Value=homebrew-chatting-ec2,Type=KEY_AND_VALUE
+            --file-exists-behavior OVERWRITE
+            --target-instances-tag-filters Key=Path,Value=/fe,Type=KEY_AND_VALUE
+
