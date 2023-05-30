@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import styled from "styled-components";
@@ -16,12 +16,14 @@ const Content = styled.div`
   display: flex;
   justify-content: space-between;
 `;
-function Root() {
+const ProtectedRoute = () => {
   const userInfo = useRecoilValue(userState);
-  //로그인 되어있는지 확인
-  if (!userInfo) {
-    return <Navigate to={"/auth"} />;
-  }
+
+  // 로그인 상태가 아니라면.
+  // if (!userInfo) {
+  //   return <Navigate to="/login" />;
+  // }
+  // 로그인 상태면.
   return (
     <Wrapper>
       <TopBar />
@@ -31,6 +33,6 @@ function Root() {
       </Content>
     </Wrapper>
   );
-}
+};
 
-export default Root;
+export default ProtectedRoute;

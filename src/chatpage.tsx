@@ -1,10 +1,8 @@
-import { Box } from "@chakra-ui/layout";
 import { useEffect, useState } from "react";
-import Chatbox from "../components/Chatbox";
-import MyChats from "../components/MyChats";
-import TopBar from "../components/miscellaneous/TopBar";
+import Chatbox from "./components/Chatbox";
+import MyChats from "./components/MyChats";
 import { useRecoilValue } from "recoil";
-import { userState } from "../Store/atom";
+import { userState } from "./Store/atom";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 const Wrapper = styled.div`
@@ -26,9 +24,9 @@ const Chatpage = () => {
   const [fetchAgain, setFetchAgain] = useState(false);
 
   //로그인 되어있는지 확인
-  useEffect(() => {
-    if (!userInfo) navigate("/auth");
-  }, []);
+  // useEffect(() => {
+  //   if (!userInfo) navigate("/login");
+  // }, []);
 
   return (
     <Wrapper>

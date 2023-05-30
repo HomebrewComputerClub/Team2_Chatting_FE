@@ -1,8 +1,8 @@
 import axios from "axios";
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import styled from "styled-components";
-import { chatsState, userState } from "../../Store/atom";
+import { chatsState, tokenState, userState } from "../../Store/atom";
 import UserBadgeItem from "../userAvatar/UserBadgeItem";
 import UserListItem from "../userAvatar/UserListItem";
 import { HiOutlinePlusCircle } from "react-icons/hi";
@@ -67,6 +67,7 @@ const GroupChatModal = () => {
   const handleGroup = (userToAdd: any) => {
     setSelectedUsers([...selectedUsers, userToAdd]);
   };
+  const accessToken = useRecoilState(tokenState);
 
   const handleSearch = async (query: any) => {
     if (!query) {
@@ -77,7 +78,7 @@ const GroupChatModal = () => {
       setLoading(true);
       const config = {
         headers: {
-          Authorization: `Bearer ${userInfo.token}`,
+          Authorization: `Bearer ${accessToken}`,
         },
       };
       const { data } = await axios.get(`/api/user?search=${query}`, config);
@@ -102,7 +103,7 @@ const GroupChatModal = () => {
     try {
       const config = {
         headers: {
-          Authorization: `Bearer ${userInfo.token}`,
+          Authorization: `Bearer ${accessToken}`,
         },
       };
       const { data } = await axios.post(

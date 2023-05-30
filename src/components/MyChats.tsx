@@ -1,14 +1,16 @@
-import { AddIcon } from "@chakra-ui/icons";
-import { Box, Stack, Text } from "@chakra-ui/layout";
 import { useToast } from "@chakra-ui/toast";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { getSender } from "../config/ChagLogics";
 import ChatLoading from "./ChatLoading";
 import GroupChatModal from "./miscellaneous/GroupChatModal";
-import { Button } from "@chakra-ui/react";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { chatsState, selectedChatState, userState } from "../Store/atom";
+import {
+  chatsState,
+  selectedChatState,
+  tokenState,
+  userState,
+} from "../Store/atom";
 import styled from "styled-components";
 
 const H1 = styled.h1`
@@ -23,10 +25,10 @@ const Img1 = styled.img`
   margin: 10px;
 `;
 const MyChats = ({ fetchAgain }: any) => {
-  const [loggedUser, setLoggedUser] = useState();
-
   const [selectedChat, setSelectedChat] = useRecoilState(selectedChatState);
   const userInfo = useRecoilValue(userState);
+  const [accessToken, setAccessToken] = useRecoilState(tokenState);
+
   const [chats, setChats] = useRecoilState(chatsState);
 
   const toast = useToast();
@@ -36,7 +38,7 @@ const MyChats = ({ fetchAgain }: any) => {
     try {
       const config = {
         headers: {
-          Authorization: `Bearer ${userInfo.token}`,
+          Authorization: `Bearer ${accessToken}`,
         },
       };
 
@@ -55,7 +57,7 @@ const MyChats = ({ fetchAgain }: any) => {
   };
 
   useEffect(() => {
-    setLoggedUser(JSON.parse(localStorage.getItem("userInfo")!));
+    // setLoggedUser(JSON.parse(localStorage.getItem("userInfo")!));
     fetchChats();
     // eslint-disable-next-line
   }, [fetchAgain]);
@@ -114,7 +116,7 @@ const MyChats = ({ fetchAgain }: any) => {
                 <div>
                   <h1>
                     {!chat.isGroupChat
-                      ? getSender(loggedUser, chat.users)
+                      ? getSender(userInfo, chat.users)
                       : chat.chatName}
                   </h1>
                   {chat.latestMessage && (
