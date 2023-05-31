@@ -233,10 +233,15 @@ function TopBar() {
       const config = {
         headers: {
           "Content-type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
+          Authorization: `${accessToken}`,
         },
       };
-      const { data } = await axios.post(`/api/chat`, { userId }, config);
+      const { data } = await client.post(
+        `/api/createRoom`,
+        { targetMemberId: userInfo.memberId },
+        config
+      );
+      console.log("createdRoom", data);
 
       if (!chats.find((c: any) => c._id === data._id))
         setChats([data, ...chats]);
@@ -304,11 +309,13 @@ function TopBar() {
                 <h1>loading</h1>
               ) : (
                 searchResult?.map((user: any) => (
-                  <UserListItem
-                    key={user._id}
-                    user={user}
-                    handleFunction={() => accessChat(user._id)}
-                  />
+                  <div onClick={() => accessChat(user._id)}>
+                    <UserListItem
+                      key={user._id}
+                      user={user}
+                      handleFunction={() => accessChat(user._id)}
+                    />
+                  </div>
                 ))
               )}
               {loadingChat && <div>loading</div>}
