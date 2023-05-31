@@ -97,6 +97,7 @@ const Wrapper = styled.div`
 
 const ModalContent = styled.div`
   z-index: 20000000;
+  border-radius: 40px;
   background: black;
   width: 40vw;
   height: 70vh;
@@ -309,13 +310,11 @@ function TopBar() {
                 <h1>loading</h1>
               ) : (
                 searchResult?.map((user: any) => (
-                  <div onClick={() => accessChat(user._id)}>
-                    <UserListItem
-                      key={user._id}
-                      user={user}
-                      handleFunction={() => accessChat(user._id)}
-                    />
-                  </div>
+                  <UserListItem
+                    key={user._id}
+                    user={user}
+                    handleFunction={() => accessChat(user._id)}
+                  />
                 ))
               )}
               {loadingChat && <div>loading</div>}
