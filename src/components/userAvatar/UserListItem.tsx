@@ -10,9 +10,7 @@ const Img = styled.img`
   border-radius: 5px;
 `;
 
-const UserListItem = ({ handleFunction }: any) => {
-  const userInfo = useRecoilValue(userState);
-
+const UserListItem = ({ user, handleFunction }: any) => {
   return (
     <Box
       onClick={handleFunction}
@@ -31,9 +29,9 @@ const UserListItem = ({ handleFunction }: any) => {
       mb={2}
       borderRadius="lg"
     >
-      <Img src={userInfo.pic} />
+      <Img src={user.pic} />
       <div>
-        <h1>{userInfo.name}</h1>
+        <h1>{user.name}</h1>
       </div>
     </Box>
   );
