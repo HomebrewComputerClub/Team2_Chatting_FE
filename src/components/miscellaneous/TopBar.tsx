@@ -171,7 +171,7 @@ function TopBar() {
 
   useEffect(() => {
     loginRemainApi();
-    apitest();
+    // apitest();
   }, []);
   const logoutHandler = async () => {
     // navigate("/login");
@@ -279,7 +279,7 @@ function TopBar() {
         }}
       >
         <GiBeerStein size={32} style={{ color: "inherit" }} />
-        <H1>Homebrew</H1>
+        <H1>asdfasdfl;kjasd;lkfj;lkasdjf;</H1>
       </Logo>
       <Buttons>
         <button
