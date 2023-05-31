@@ -25,7 +25,7 @@ jobs:
           CI: ""
 
       - name: zip create
-        run: zip -qq -r ./build-fe.zip . -i ./fe/build
+        run: zip -qq -r ./build-fe.zip . 
         shell: bash
 
       - name: Configure AWS credentials
