@@ -6,7 +6,7 @@ files:
     destination: /home/ubuntu/fe/build/
     overwrite: yes
 permissions:
-  - object: /home/ubuntu/fe
+  - object: /home/ubuntu/fe/build/
     owner: root
     group: root
     mode: 755
