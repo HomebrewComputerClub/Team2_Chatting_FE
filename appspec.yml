@@ -3,10 +3,10 @@ os: linux
 
 files:
   - source: /
-    destination: /home/ubuntu/fe/build/
+    destination: /home/ubuntu/fe/build
     overwrite: yes
 permissions:
-  - object: /home/ubuntu/fe/build/
+  - object: /home/ubuntu/fe/build
     owner: root
     group: root
     mode: 755
