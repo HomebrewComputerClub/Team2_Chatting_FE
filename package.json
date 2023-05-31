@@ -2,7 +2,7 @@
 	"name": "my-app",
 	"version": "0.1.0",
 	"private": true,
-	"proxy": "https://cocobol.site",
+	"proxy": "https://192.168.219.169:8088/",
 	"dependencies": {
 		"@chakra-ui/icons": "^2.0.19",
 		"@chakra-ui/react": "^2.6.1",
@@ -45,7 +45,7 @@
 		"ws": "^8.13.0"
 	},
 	"scripts": {
-		"start": "react-scripts start",
+		"start": "set HTTPS=true&&set SSL_CRT_FILE=localhost.pem&&set SSL_KEY_FILE=localhost-key.pem&&react-scripts start",
 		"build": "react-scripts build",
 		"test": "react-scripts test",
 		"eject": "react-scripts eject"
