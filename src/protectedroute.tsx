@@ -1,10 +1,8 @@
 import React from "react";
-import { Navigate, Outlet } from "react-router-dom";
-import { useRecoilValue } from "recoil";
+import { Outlet } from "react-router-dom";
 import styled from "styled-components";
 import TopBar from "./components/miscellaneous/TopBar";
 import Navbar from "./components/molecules/Navbar";
-import { userState } from "./Store/atom";
 
 const Wrapper = styled.div`
   display: flex;
@@ -17,13 +15,6 @@ const Content = styled.div`
   justify-content: space-between;
 `;
 const ProtectedRoute = () => {
-  const userInfo = useRecoilValue(userState);
-
-  // 로그인 상태가 아니라면.
-  // if (!userInfo) {
-  //   return <Navigate to="/login" />;
-  // }
-  // 로그인 상태면.
   return (
     <Wrapper>
       <TopBar />

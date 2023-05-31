@@ -2,7 +2,7 @@
 	"name": "my-app",
 	"version": "0.1.0",
 	"private": true,
-	"proxy": "https://192.168.219.169:8088/",
+	"proxy": "https://192.168.219.169:8088",
 	"dependencies": {
 		"@chakra-ui/icons": "^2.0.19",
 		"@chakra-ui/react": "^2.6.1",
@@ -69,7 +69,6 @@
 		]
 	},
 	"devDependencies": {
-		"@types/styled-components": "^5.1.26",
-		"cross-env": "^7.0.3"
+		"@types/styled-components": "^5.1.26"
 	}
 }
