@@ -128,8 +128,6 @@ function TopBar() {
   const [accessToken, setAccessToken] = useRecoilState(tokenState);
   const [isLoggedIn, setIsLoggedIn] = useRecoilState(loggedInAtom);
 
-  console.log("userInfo", userInfo);
-
   //remain api
   //remain
   const loginRemainApi = async () => {
@@ -142,6 +140,7 @@ function TopBar() {
       if (res.status === 200) {
         // access token 설정.
         const token = res.headers.authorization;
+        console.log("remainlogin", token);
         setAccessToken(token);
         setUserInfo(jwt_decode(token));
         setIsLoggedIn(true);
@@ -154,8 +153,24 @@ function TopBar() {
     }
   };
 
+  const apitest = async () => {
+    console.log("asdfasdfads", accessToken);
+    try {
+      const config = {
+        headers: {
+          Authorization: `${accessToken}`,
+        },
+      };
+      const res = await client.get(`/api/members/getUsername`, config);
+      console.log("res", res);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   useEffect(() => {
     loginRemainApi();
+    apitest();
   }, []);
   const logoutHandler = async () => {
     // navigate("/login");
@@ -164,6 +179,7 @@ function TopBar() {
       const { data } = await client.post(`/api/members/logout`, {});
       setUserInfo(null);
       setAccessToken(null);
+      setIsLoggedIn(false);
     } catch (err) {
       console.log(err);
     }
