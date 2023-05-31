@@ -34,6 +34,7 @@ import client from "../../utils/network";
 import { CgProfile } from "react-icons/cg";
 import { Link } from "react-router-dom";
 import { GrLogin } from "react-icons/gr";
+
 const NotiWrapper = styled.div`
   width: 20vw;
   height: 50vw;
@@ -185,11 +186,14 @@ function TopBar() {
 
       const config = {
         headers: {
-          Authorization: `Bearer ${accessToken}`,
+          Authorization: `${accessToken}`,
         },
       };
-
-      const { data } = await axios.get(`/api/user?search=${search}`, config);
+      console.log("accessToken", accessToken);
+      const { data } = await client.get(
+        `/api/members/search/${search}`,
+        config
+      );
 
       setLoading(false);
       setSearchResult(data);
@@ -204,7 +208,7 @@ function TopBar() {
       });
     }
   };
-
+  console.log("searchResult", searchResult);
   const accessChat = async (userId: any) => {
     console.log(userId);
 
@@ -281,7 +285,7 @@ function TopBar() {
                 </button>
               </div>
               {loading ? (
-                <h1>sadf</h1>
+                <h1>loading</h1>
               ) : (
                 searchResult?.map((user: any) => (
                   <UserListItem
