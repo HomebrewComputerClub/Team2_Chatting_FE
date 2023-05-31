@@ -49,7 +49,3 @@ jobs:
             --application-name chatting-code        
             --deployment-group-name chatting-fe-server
             --s3-location bucket=chatting-fe-bucket,key=build-fe.zip,bundleType=zip
-            --deployment-style deploymentType=IN_PLACE
-            --ec2-tag-filters Key=Name,Value=homebrew-chatting-ec2,Type=KEY_AND_VALUE
-            --file-exists-behavior OVERWRITE
-            --target-instances-tag-filters Key=Path,Value=/fe,Type=KEY_AND_VALUE

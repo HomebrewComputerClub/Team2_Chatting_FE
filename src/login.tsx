@@ -2,13 +2,14 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useRecoilState } from "recoil";
-import { tokenState, userState } from "./Store/atom";
+import { loggedInAtom, tokenState, userState } from "./Store/atom";
 import { LogInApi } from "./remote/auth";
 import ModalField from "./components/molecules/ModalField";
 import Emailfield from "./components/molecules/Emailfield";
 import Passwordfield from "./components/molecules/Passwordfield";
 import GoogleLoginButton from "./components/molecules/GoogleLoginButton";
 import jwt_decode from "jwt-decode";
+import { useNavigate } from "react-router-dom";
 // const dummy = {
 //   status: 200,
 //   data: {
@@ -63,6 +64,7 @@ const SocialLoginButton = styled.button`
   margin-bottom: 20px;
 `;
 const Login = () => {
+  const navigate = useNavigate();
   const { handleSubmit, control, setError, getValues, setValue } =
     useForm<FormValues>();
 
@@ -74,6 +76,7 @@ const Login = () => {
 
   const [userInfo, setUserInfo] = useRecoilState(userState);
   const [accessToken, setAccessToken] = useRecoilState(tokenState);
+  const [isLoggedIn, setIsLoggedIn] = useRecoilState(loggedInAtom);
 
   // 카카오 로그인
   const REST_API_KEY = "47430455fb390115140c2fdeb2b46a6b";
@@ -93,7 +96,8 @@ const Login = () => {
       const token = res.headers.authorization;
       setAccessToken(token);
       setUserInfo(jwt_decode(token));
-
+      setIsLoggedIn(true);
+      navigate("/");
       // // 쿠키 설정 -> 이건 나중에 서버가 해줌. 1분뒤에 없어지는 쿠키.
       // setCookie("refreshToken", "abc123", {
       //   path: "/",
@@ -112,17 +116,6 @@ const Login = () => {
       handleOpen();
       console.log("실패");
     }
-    // //remain
-    // try {
-    //   const response = await client.post(
-    //     `members/loginremain`,
-    //     {},
-    //     { withCredentials: true }
-    //   );
-    //   console.log("remain", response);
-    // } catch (err) {
-    //   console.log(err);
-    // }
   };
 
   console.log("decode", userInfo);
@@ -131,6 +124,9 @@ const Login = () => {
   };
 
   console.log("userInfo", userInfo);
+
+  //refresh token 있으면 나가
+
   return (
     <FullScreen>
       <ModalField
