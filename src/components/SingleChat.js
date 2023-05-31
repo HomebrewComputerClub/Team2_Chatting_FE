@@ -17,7 +17,7 @@ import {
 } from "../Store/atom";
 import styled from "styled-components";
 import * as StompJs from "@stomp/stompjs";
-
+import { BsFillChatHeartFill } from "react-icons/bs";
 var selectedChatCompare;
 //var socket;
 
@@ -421,10 +421,26 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         // to get socket.io on same page
         <div
           style={{
-            background: "#F5BF19",
+            width: "100%",
+            height: "100%",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            flexDirection: "column",
           }}
         >
-          <h1>Click on a user to start chatting</h1>
+          <BsFillChatHeartFill size={100} />
+          <h1
+            style={{
+              display: "block",
+              margin: "30px",
+              fontFamily: "Lilita One",
+              fontSize: "30px",
+              fontWeight: "bold",
+            }}
+          >
+            채팅을 시작해보세요!
+          </h1>
         </div>
       )}
     </div>

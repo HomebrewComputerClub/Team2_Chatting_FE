@@ -33,6 +33,7 @@ import { Button } from "@chakra-ui/react";
 import client from "../../utils/network";
 import { CgProfile } from "react-icons/cg";
 import { Link } from "react-router-dom";
+import { GrLogin } from "react-icons/gr";
 const NotiWrapper = styled.div`
   width: 20vw;
   height: 50vw;
@@ -379,7 +380,12 @@ function TopBar() {
               </MenuList>
             </Menu>
           ) : (
-            <Link to="/login">로그인</Link>
+            <Link
+              to="/login"
+              style={{ position: "absolute", left: "94vw", top: "20" }}
+            >
+              <GrLogin size={32} color="black" />
+            </Link>
           )}
         </div>
       </Buttons>
