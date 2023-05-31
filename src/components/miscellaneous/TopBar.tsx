@@ -237,11 +237,7 @@ function TopBar() {
           Authorization: `${accessToken}`,
         },
       };
-      const { data } = await client.post(
-        `/api/createRoom`,
-        { targetMemberId: userInfo.memberId },
-        config
-      );
+      const { data } = await client.post(`/api/createRoom/${userId}`, config);
       console.log("createdRoom", data);
 
       if (!chats.find((c: any) => c._id === data._id))
@@ -313,7 +309,7 @@ function TopBar() {
                   <UserListItem
                     key={user._id}
                     user={user}
-                    handleFunction={() => accessChat(user._id)}
+                    handleFunction={() => accessChat(user.id)}
                   />
                 ))
               )}

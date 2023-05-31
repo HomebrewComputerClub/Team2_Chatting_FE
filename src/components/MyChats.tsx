@@ -38,11 +38,11 @@ const MyChats = ({ fetchAgain }: any) => {
     try {
       const config = {
         headers: {
-          Authorization: `Bearer ${accessToken}`,
+          Authorization: `${accessToken}`,
         },
       };
 
-      const { data } = await axios.get("/api/chat", config);
+      const { data } = await axios.get("/api/getRoomList/direct", config);
       setChats(data);
     } catch (error) {
       toast({
@@ -92,7 +92,7 @@ const MyChats = ({ fetchAgain }: any) => {
       <div style={{ height: "80%", width: "100%" }}>
         {chats ? (
           <div style={{ overflowY: "scroll", height: "100%", width: "100%" }}>
-            {chats.map((chat: any) => (
+            {chats?.map((chat: any) => (
               <div
                 onClick={() => setSelectedChat(chat)}
                 style={{
