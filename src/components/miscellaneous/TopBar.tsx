@@ -280,7 +280,7 @@ function TopBar() {
         }}
       >
         <GiBeerStein size={32} style={{ color: "inherit" }} />
-        <H1>Homebrew</H1>
+        <H1>Homebrew01</H1>
       </Logo>
       <Buttons>
         <button
