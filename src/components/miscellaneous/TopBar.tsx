@@ -29,6 +29,7 @@ import client from '../../utils/network';
 import { CgProfile } from 'react-icons/cg';
 import { Link } from 'react-router-dom';
 import { GrLogin } from 'react-icons/gr';
+import useDebounce from '../../hooks/useDebounce';
 
 const NotiWrapper = styled.div`
 	width: 20vw;
@@ -110,9 +111,34 @@ export const Buttons = styled.div`
 	justify-content: space-around;
 	background: #f5bf19;
 `;
+
+const dummy = [
+	{
+		id: 1,
+		name: 'a',
+		email: 'a@n',
+	},
+	{
+		id: 2,
+		name: 'ab',
+		email: 'ab@n',
+	},
+	{
+		id: 3,
+		name: 'abc',
+		email: 'abc@n',
+	},
+];
+
+interface Data {
+	id: number;
+	name: string;
+	email: string;
+}
+
 function TopBar() {
 	const [search, setSearch] = useState('');
-	const [searchResult, setSearchResult] = useState([]);
+	const [searchResult, setSearchResult] = useState<Array<Data>>([]);
 	const [loading, setLoading] = useState(false);
 	const [loadingChat, setLoadingChat] = useState(false);
 	const setSelectedChat = useSetRecoilState(selectedChatState);
@@ -177,7 +203,7 @@ function TopBar() {
 		}
 	};
 
-	const handleSearch = async () => {
+	const handleSearch = () => {
 		if (!search) {
 			toast({
 				title: 'Please Enter something in search',
@@ -198,10 +224,9 @@ function TopBar() {
 				},
 			};
 			console.log('accessToken', accessToken);
-			const { data } = await client.get(`/api/members/search/${search}`, config);
-
+			//const { data } = await client.get(`/api/members/search/${search}`, config);
+			//const data = dummy;
 			setLoading(false);
-			setSearchResult(data);
 		} catch (error) {
 			toast({
 				title: 'Error Occured!',
@@ -213,6 +238,7 @@ function TopBar() {
 			});
 		}
 	};
+
 	console.log('searchResult', searchResult);
 	const accessChat = async (userId: any) => {
 		console.log(userId);
@@ -262,6 +288,29 @@ function TopBar() {
 	const onSearchInput = (e: any) => {
 		setSearch(e.target.value);
 	};
+
+	// 300ms안에 입력이 더 들어오면 get요청을 보내지 않음.
+	const debouncedQuery = useDebounce(search, 300);
+	// 추천 검색어 리스트 받아오는 api.
+	useEffect(() => {
+		const config = {
+			headers: {
+				Authorization: `${accessToken}`,
+			},
+		};
+		/*
+		const searchRecommendListApi = async (input: string) =>
+			await client.get(`/api/members/search/${input}`, config);
+		searchRecommendListApi(debouncedQuery)
+			.then((res) => {
+				setSearchResult(res.data);
+			})
+			.catch((err) => console.log(err.response));
+			*/
+		setSearchResult(dummy);
+		console.log(debouncedQuery);
+	}, [debouncedQuery, accessToken]);
+
 	return (
 		<Wrapper className='topbar'>
 			<Logo
@@ -298,6 +347,7 @@ function TopBar() {
 										key={user._id}
 										user={user}
 										handleFunction={() => accessChat(user._id)}
+										query={debouncedQuery}
 									/>
 								))
 							)}
