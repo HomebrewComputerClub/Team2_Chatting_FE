@@ -70,6 +70,9 @@ const Logo = styled.div`
 	margin: 20px;
 	cursor: pointer;
 	background-color: inherit;
+	@media screen and (max-width: 500px) {
+		font-size: 20px;
+	}
 `;
 const H1 = styled.h1`
 	color: inherit;
@@ -77,6 +80,9 @@ const H1 = styled.h1`
 	font-size: 30px;
 	font-family: 'Lilita One', cursive;
 	margin: 10px;
+	@media screen and (max-width: 500px) {
+		display: none;
+	}
 `;
 const Img = styled.img`
 	width: 2vw;
@@ -87,6 +93,7 @@ const Img = styled.img`
 `;
 
 const Wrapper = styled.div`
+	grid-area: top-bar;
 	display: flex;
 	align-items: 'center';
 `;
@@ -104,8 +111,9 @@ const ModalContent = styled.div`
 `;
 export const Buttons = styled.div`
 	border-radius: 10px;
+	margin-right: 30px;
 	height: 90%;
-	width: 14vw;
+	width: 200px;
 	display: flex;
 	align-items: center;
 	justify-content: space-around;
@@ -322,7 +330,10 @@ function TopBar() {
 				<H1>Homebrew</H1>
 			</Logo>
 			<Buttons>
-				<button onClick={onSearchModalOpen} style={{ background: 'none', border: 'none' }}>
+				<button
+					onClick={onSearchModalOpen}
+					style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+				>
 					<AiOutlineSearch size={32} color='black' />
 				</button>
 				{searchModalOpen ? (
@@ -355,21 +366,17 @@ function TopBar() {
 						</ModalContent>
 					</ModalOverlay>
 				) : null}
-				<div
-					style={{
-						display: 'flex',
-						alignItems: 'center',
-						width: '10vw',
-						justifyContent: 'space-between',
-					}}
-				>
+				<div style={{ width: '32px', height: '32px' }}>
 					<Menu>
 						<MenuButton
 							style={{
 								background: 'none',
 								border: 'none',
-								width: '3vw',
-								height: '3vw',
+								width: '100%',
+								height: '100%',
+								cursor: 'pointer',
+								display: 'flex',
+								justifyContent: 'center',
 							}}
 						>
 							<MdNotifications size={32} color='black' />
@@ -400,51 +407,51 @@ function TopBar() {
 							</NotiWrapper>
 						</MenuList>
 					</Menu>
-					{isLoggedIn ? (
-						<Menu>
-							<MenuButton
-								as={Button}
-								bg='white'
-								rightIcon={<ChevronDownIcon fontSize={'30px'} />}
-								w='6vw'
-								h='5vh'
-								display={'flex'}
-								justifyContent={'center'}
-								border={'none'}
-								borderRadius={'20px'}
-								alignItems={'center'}
-								boxShadow={'5px 5px 5px rgba(0, 0, 0, 0.2)'}
-							>
-								<CgProfile size={30} />
-							</MenuButton>
-							<MenuList>
-								<ProfiWrapper>
-									<ProfileModal user={userInfo}></ProfileModal>
-									<MenuDivider />
-									<MenuItem
-										onClick={logoutHandler}
-										bg={'#f5bf19'}
-										border={'none'}
-										width={'80%'}
-										height={'5vh'}
-										display={'flex'}
-										justifyContent={'center'}
-										alignItems={'center'}
-										fontSize={'28px'}
-										borderRadius={'20px'}
-										boxShadow={`2px 5px 5px rgba(0, 0, 0, 0.2)`}
-									>
-										로그 아웃
-									</MenuItem>
-								</ProfiWrapper>
-							</MenuList>
-						</Menu>
-					) : (
-						<Link to='/login' style={{ position: 'absolute', left: '94vw', top: '20' }}>
-							<GrLogin size={32} color='black' />
-						</Link>
-					)}
 				</div>
+				{isLoggedIn ? (
+					<Menu>
+						<MenuButton
+							as={Button}
+							bg='white'
+							rightIcon={<ChevronDownIcon fontSize={'30px'} />}
+							w='6vw'
+							h='5vh'
+							display={'flex'}
+							justifyContent={'center'}
+							border={'none'}
+							borderRadius={'20px'}
+							alignItems={'center'}
+							boxShadow={'5px 5px 5px rgba(0, 0, 0, 0.2)'}
+						>
+							<CgProfile size={30} />
+						</MenuButton>
+						<MenuList>
+							<ProfiWrapper>
+								<ProfileModal user={userInfo}></ProfileModal>
+								<MenuDivider />
+								<MenuItem
+									onClick={logoutHandler}
+									bg={'#f5bf19'}
+									border={'none'}
+									width={'80%'}
+									height={'5vh'}
+									display={'flex'}
+									justifyContent={'center'}
+									alignItems={'center'}
+									fontSize={'28px'}
+									borderRadius={'20px'}
+									boxShadow={`2px 5px 5px rgba(0, 0, 0, 0.2)`}
+								>
+									로그 아웃
+								</MenuItem>
+							</ProfiWrapper>
+						</MenuList>
+					</Menu>
+				) : (
+					<Link to='/login' style={{ cursor: 'pointer' }}>
+						<GrLogin size={32} color='black' />
+					</Link>
+				)}
 			</Buttons>
 		</Wrapper>
 	);
