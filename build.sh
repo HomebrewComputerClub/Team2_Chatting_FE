@@ -12,5 +12,4 @@
 
 # # sudo yarn build
 # Unzip the deployment bundle
-unzip -qq /home/ubuntu/fe/build-fe.zip -d /home/ubuntu/fe
 sudo service nginx restart

@@ -3,15 +3,15 @@ os: linux
 
 files:
   - source: /
-    destination: /home/ubuntu/fe
+    destination: /home/ubuntu/fe/build
     overwrite: yes
 permissions:
-  - object: /home/ubuntu/fe
+  - object: /home/ubuntu/fe/build
     owner: root
     group: root
     mode: 755
 hooks:
   AfterInstall:
-    - location: /home/ubuntu/fe/build.sh
+    - location: /home/ubuntu/fe/build/build.sh
       timeout: 1000
       runas: root
