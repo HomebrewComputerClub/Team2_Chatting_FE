@@ -208,13 +208,17 @@ function TopBar() {
 
     try {
       setLoadingChat(true);
+      console.log("asdf", accessToken);
       const config = {
         headers: {
-          "Content-type": "application/json",
           Authorization: `${accessToken}`,
         },
       };
-      const { data } = await axios.post(`/api/createRoom/${userId}`, config);
+      const { data } = await axios.post(
+        `/api/createRoom/${userId}`,
+        {},
+        config
+      );
       console.log("createdRoom", data);
 
       if (!chats.find((c: any) => c._id === data._id))
@@ -284,7 +288,7 @@ function TopBar() {
               ) : (
                 searchResult?.map((user: any) => (
                   <UserListItem
-                    key={user._id}
+                    key={user.id}
                     user={user}
                     handleFunction={() => accessChat(user.id)}
                   />

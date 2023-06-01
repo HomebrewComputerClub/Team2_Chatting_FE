@@ -16,7 +16,7 @@ const ScrollableChat = ({ messages }: any) => {
   return (
     <div style={{ background: "grey" }}>
       {messages &&
-        messages.map((m: any, i: any) => (
+        messages?.map((m: any, i: any) => (
           <div style={{ display: "flex" }} key={m._id}>
             {(isSameSender(messages, m, i, userInfo._id) ||
               isLastMessage(messages, i, userInfo._id)) && (

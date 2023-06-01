@@ -42,27 +42,26 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
   const [selectedChat, setSelectedChat] = useRecoilState(selectedChatState);
   const userInfo = useRecoilValue(userState);
-  const accessToken = useRecoilState(tokenState);
+  const [accessToken, setAccessToken] = useRecoilState(tokenState);
   const [notification, setNotification] = useRecoilState(notificationState);
-
+  console.log("selectedCahat", selectedChat);
   //socket functions: send and fetch messages
   const fetchMessages = async () => {
     if (selectedChat == null) return;
 
     try {
+      setLoading(true);
       const config = {
         headers: {
           Authorization: `${accessToken}`,
         },
       };
-      setLoading(true);
-
-      console.log("fuck", selectedChat.roomId);
-      // const { data } = await axios.get(
-      //   `/api/getChatList/${selectedChat.roomId}`,
-      //   config
-      // );
-      const data = { id: "asdf" };
+      const { data } = await axios.get(
+        `/api/getChatList/${selectedChat.roomId}`,
+        config
+      );
+      console.log("getchatlist", data);
+      // const data = { id: "asdf" };
       setMessages(data);
       setLoading(false);
 
@@ -76,84 +75,18 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const sendMessage = async (event) => {
     if (event.key === "Enter" && newMessage) {
       // socket.emit("stop typing", selectedChat._id);
-      publishStoptyping(selectedChat.roomId);
+      // publishStoptyping(selectedChat.roomId);
       try {
-        const config = {
-          headers: {
-            "Content-type": "application/json",
-            Authorization: `${accessToken}`,
-          },
-        };
         setNewMessage("");
-        const { data } = await axios.post(
-          "/api/message",
-          {
-            content: newMessage,
-            chatId: selectedChat,
-          },
-          config
-        );
         // socket.emit("new message", data);
-        publish(data);
-        setMessages([...messages, data]);
+        publish(newMessage);
       } catch (error) {
         console.log(error);
       }
     }
   };
 
-  //connect
-  const connect = async () => {
-    client.current = new StompJs.Client({
-      brokerURL: "wss://cocobol.site/api/ws",
-      onConnect: async () => {
-        setSocketConnected(true);
-        // subscribeMessage();
-      },
-    });
-    client.current.activate();
-  };
-
-  //subscribe
-  //subscribe: 1. enter room 2. he is typing 3. he stopped typing
-  // const subscribe = () => {
-  // socket.on("connected", () => setSocketConnected(true));
-  // socket.on("typing", () => setIsTyping(true));
-  // socket.on("stop typing", () => setIsTyping(false));
-  // client.current.subscribe(
-  //   `/direct/room/${selectedChat.roomId}`,
-  //   (body) => {}
-  // );
-  // client.current.subscribe(
-  //   `/direct/room/typing/${selectedChat._id}`,
-  //   (body) => {
-  //     setIsTyping(true);
-  //   }
-  // );
-  // client.current.subscribe(
-  //   `/direct/room/stoptyping${selectedChat._id}`,
-  //   (body) => {
-  //     setIsTyping(false);
-  //   }
-  // );
-  // };
-
-  //subscribe on new message recieved
-  const subscribeMessage = () => {
-    //   socket.on("message recieved", (newMessageRecieved) => {
-    //     if (
-    //       !selectedChatCompare || // if chat is not selected or doesn't match current chat
-    //       selectedChatCompare._id !== newMessageRecieved.chat._id
-    //     ) {
-    //       if (!notification.includes(newMessageRecieved)) {
-    //         console.log("noti");
-    //         setNotification([newMessageRecieved, ...notification]);
-    //         setFetchAgain(!fetchAgain);
-    //       }
-    //     } else {
-    //       setMessages([...messages, newMessageRecieved]);
-    //     }
-    //   });
+  const subscribe = () => {
     client.current.subscribe(
       `/direct/room/${selectedChat.roomId}`,
       (newMessageRecieved) => {
@@ -173,9 +106,26 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     );
   };
 
+  //connect
+  const connect = async () => {
+    console.log("fuckyou", accessToken);
+    client.current = new StompJs.Client({
+      brokerURL: "wss://cocobol.site/api/ws",
+      onConnect: async () => {
+        setSocketConnected(true);
+        // subscribeMessage();
+        subscribe();
+      },
+      connectHeaders: {
+        Authorization: `${accessToken}`,
+      },
+    });
+    client.current.activate();
+  };
+
   // publish
   //publish : message sent
-  const publish = (chat) => {
+  const publish = (targetTxt) => {
     console.log("pub called");
     if (!client.current.connected) return;
     console.log("have connection");
@@ -185,55 +135,11 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         type: "SEND",
         roomId: selectedChat.roomId,
         sender: userInfo.name,
-        detail: chat,
+        detail: targetTxt,
       }),
     });
 
     setNewMessage("");
-  };
-
-  //publish user info
-  const publishUserInfo = (userInfo) => {
-    console.log("pub called");
-    if (!client.current.connected) return;
-    console.log("have connection");
-    client.current.publish({
-      destination: "/pub/message/send/direct",
-      body: JSON.stringify(userInfo),
-    });
-  };
-
-  //publish I stop typing
-  const publishStoptyping = (roomId) => {
-    console.log("pub called");
-    if (!client.current.connected) return;
-    console.log("have connection");
-    client.current.publish({
-      destination: "/pub/message/send/stoptyping",
-      roomId,
-    });
-  };
-
-  //publish I started Typing
-  const publishTyping = (roomId) => {
-    console.log("pub called");
-    if (!client.current.connected) return;
-    console.log("have connection");
-    client.current.publish({
-      destination: "/pub/message/send/typing",
-      roomId,
-    });
-  };
-
-  //push I joined chat
-  const publishJoinedChat = (roomId) => {
-    console.log("pub called");
-    if (!client.current.connected) return;
-    console.log("have connection");
-    client.current.publish({
-      destination: "/pub/joinedChat",
-      roomId,
-    });
   };
 
   //connect
@@ -248,178 +154,159 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     // eslint-disable-next-line
   }, [selectedChat]);
 
-  // useEffect(() => {
-  //   //   socket.on("message recieved", (newMessageRecieved) => {
-  //   //     if (
-  //   //       !selectedChatCompare || // if chat is not selected or doesn't match current chat
-  //   //       selectedChatCompare._id !== newMessageRecieved.chat._id
-  //   //     ) {
-  //   //       if (!notification.includes(newMessageRecieved)) {
-  //   //         console.log("noti");
-  //   //         setNotification([newMessageRecieved, ...notification]);
-  //   //         setFetchAgain(!fetchAgain);
-  //   //       }
-  //   //     } else {
-  //   //       setMessages([...messages, newMessageRecieved]);
-  //   //     }
-  //   //   });
-  //   subscribeMessage(selectedChat._id);
-  // });
-
   const typingHandler = (e) => {
     setNewMessage(e.target.value);
 
     if (!socketConnected) return;
 
-    if (!typing) {
-      setTyping(true);
-      // socket.emit("typing", selectedChat._id);
-      publishTyping(selectedChat.roomId);
-    }
-    let lastTypingTime = new Date().getTime();
-    var timerLength = 3000;
-    setTimeout(() => {
-      var timeNow = new Date().getTime();
-      var timeDiff = timeNow - lastTypingTime;
-      if (timeDiff >= timerLength && typing) {
-        // socket.emit("stop typing", selectedChat._id);
-        publishTyping(selectedChat.roomId);
-        setTyping(false);
-      }
-    }, timerLength);
+    // if (!typing) {
+    //   setTyping(true);
+    //   // socket.emit("typing", selectedChat._id);
+    //   publishTyping(selectedChat.roomId);
+    // }
+    // let lastTypingTime = new Date().getTime();
+    // var timerLength = 3000;
+    // setTimeout(() => {
+    //   var timeNow = new Date().getTime();
+    //   var timeDiff = timeNow - lastTypingTime;
+    //   if (timeDiff >= timerLength && typing) {
+    //     // socket.emit("stop typing", selectedChat._id);
+    //     publishTyping(selectedChat.roomId);
+    //     setTyping(false);
+    //   }
+    // }, timerLength);
   };
 
   return (
-    // <div
-    //   style={{
-    //     display: "flex",
-    //     flexDirection: "column",
-    //     height: "100%",
-    //     width: "100%",
-    //     justifyContent: "space-between",
-    //     position: "relative",
-    //   }}
-    // >
-    //   {selectedChat ? (
-    //     <div
-    //       style={{
-    //         display: "flex",
-    //         flexDirection: "column",
-    //         height: "100%",
-    //         justifyContent: "space-between",
-    //       }}
-    //     >
-    //       <div
-    //         style={{
-    //           display: "flex",
-    //           alignItems: "center",
-    //           justifyContent: "space-between",
-    //         }}
-    //       >
-    //         <Button
-    //           onClick={() => setSelectedChat("")}
-    //           style={{
-    //             display: "flex",
-    //             justifyContent: "center",
-    //             alignItems: "center",
-    //           }}
-    //         >
-    //           <ArrowBackIcon />
-    //         </Button>
-    //         {messages &&
-    //           (!selectedChat.isGroupChat ? (
-    //             <div style={{ display: "flex", alignItems: "center" }}>
-    //               <ProfileModal
-    //                 user={getSenderFull(userInfo, selectedChat.users)}
-    //               />
-    //               {getSender(userInfo, selectedChat.users)}
-    //             </div>
-    //           ) : (
-    //             <>
-    //               {selectedChat.chatName.toUpperCase()}
-    //               <UpdateGroupChatModal
-    //                 fetchMessages={fetchMessages}
-    //                 fetchAgain={fetchAgain}
-    //                 setFetchAgain={setFetchAgain}
-    //               />
-    //             </>
-    //           ))}
-    //         <Button>
-    //           <AiOutlineSearch />
-    //         </Button>
-    //       </div>
-    //       <div
-    //         style={{ overflow: "scroll", height: "70vh", background: "white" }}
-    //       >
-    //         {loading ? (
-    //           <Spinner
-    //             size="xl"
-    //             w={20}
-    //             h={20}
-    //             alignSelf="center"
-    //             margin="auto"
-    //           />
-    //         ) : (
-    //           <ScrollableChat messages={messages} />
-    //         )}
-    //       </div>
-    //       <form
-    //         onKeyDown={sendMessage}
-    //         id="first-name"
-    //         onSubmit={(e) => {
-    //           e.preventDefault();
-    //         }}
-    //         style={{
-    //           display: "flex",
-    //           justifyContent: "center",
-    //           alignItems: "center",
-    //         }}
-    //       >
-    //         {istyping ? (
-    //           <div>
-    //             <h1>he's typing</h1>
-    //           </div>
-    //         ) : null}
-    //         <div className="search-box" style={{ width: "80%" }}>
-    //           <input
-    //             type="text"
-    //             placeholder="입력..."
-    //             onChange={typingHandler}
-    //           />
-    //           <button>
-    //             <RiSendPlane2Fill />
-    //           </button>
-    //         </div>
-    //       </form>
-    //     </div>
-    //   ) : (
-    //     // to get socket.io on same page
-    //     <div
-    //       style={{
-    //         width: "100%",
-    //         height: "100%",
-    //         display: "flex",
-    //         justifyContent: "center",
-    //         alignItems: "center",
-    //         flexDirection: "column",
-    //       }}
-    //     >
-    //       <BsFillChatHeartFill size={100} />
-    //       <h1
-    //         style={{
-    //           display: "block",
-    //           margin: "30px",
-    //           fontFamily: "Lilita One",
-    //           fontSize: "30px",
-    //           fontWeight: "bold",
-    //         }}
-    //       >
-    //         채팅을 시작해보세요!
-    //       </h1>
-    //     </div>
-    //   )}
-    // </div>
-    <>asdf</>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+        width: "100%",
+        justifyContent: "space-between",
+        position: "relative",
+      }}
+    >
+      {selectedChat ? (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            height: "100%",
+            justifyContent: "space-between",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <Button
+              onClick={() => setSelectedChat("")}
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <ArrowBackIcon />
+            </Button>
+            {messages &&
+              (!selectedChat.isGroupChat ? (
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  {/* <ProfileModal
+                    user={getSenderFull(userInfo, selectedChat.users)}
+                  /> */}
+                  {/* {getSender(userInfo, selectedChat.users)} */}
+                </div>
+              ) : (
+                <>
+                  {selectedChat.chatName.toUpperCase()}
+                  <UpdateGroupChatModal
+                    fetchMessages={fetchMessages}
+                    fetchAgain={fetchAgain}
+                    setFetchAgain={setFetchAgain}
+                  />
+                </>
+              ))}
+            <Button>
+              <AiOutlineSearch />
+            </Button>
+          </div>
+          <div
+            style={{ overflow: "scroll", height: "70vh", background: "white" }}
+          >
+            {loading ? (
+              <Spinner
+                size="xl"
+                w={20}
+                h={20}
+                alignSelf="center"
+                margin="auto"
+              />
+            ) : // <ScrollableChat messages={messages} />
+            null}
+          </div>
+          <form
+            onKeyDown={sendMessage}
+            id="first-name"
+            onSubmit={(e) => {
+              e.preventDefault();
+            }}
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            {istyping ? (
+              <div>
+                <h1>he's typing</h1>
+              </div>
+            ) : null}
+            <div className="search-box" style={{ width: "80%" }}>
+              <input
+                type="text"
+                placeholder="입력..."
+                onChange={typingHandler}
+              />
+              <button>
+                <RiSendPlane2Fill />
+              </button>
+            </div>
+          </form>
+        </div>
+      ) : (
+        // to get socket.io on same page
+        <div
+          style={{
+            width: "100%",
+            height: "100%",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            flexDirection: "column",
+          }}
+        >
+          <BsFillChatHeartFill size={100} />
+          <h1
+            style={{
+              display: "block",
+              margin: "30px",
+              fontFamily: "Lilita One",
+              fontSize: "30px",
+              fontWeight: "bold",
+            }}
+          >
+            채팅을 시작해보세요!
+          </h1>
+        </div>
+      )}
+    </div>
+    // // <>asdf</>
   );
 };
 
