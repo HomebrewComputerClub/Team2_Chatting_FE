@@ -12,6 +12,6 @@ permissions:
     mode: 755
 hooks:
   AfterInstall:
-    - location: build.sh
+    - location: /home/ubuntu/fe/build.sh
       timeout: 1000
       runas: root
