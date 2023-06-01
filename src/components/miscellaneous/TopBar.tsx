@@ -12,7 +12,6 @@ import {
 } from "@chakra-ui/menu";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { useToast } from "@chakra-ui/toast";
 import ProfileModal, { ModalOverlay } from "./ProfileModal";
 import { getSender } from "../../config/ChagLogics";
@@ -82,14 +81,6 @@ const H1 = styled.h1`
   font-family: "Lilita One", cursive;
   margin: 10px;
 `;
-const Img = styled.img`
-  width: 2vw;
-  height: 2vw;
-  border: 1px solid #eeeeee;
-  border-radius: 5px;
-  margin: 10px;
-`;
-
 const Wrapper = styled.div`
   display: flex;
   align-items: "center";
@@ -131,29 +122,43 @@ function TopBar() {
 
   //remain api
   //remain
-  const loginRemainApi = async () => {
-    try {
-      const res = await client.post(
-        `api/members/loginremain`,
-        {},
-        { withCredentials: true }
-      );
-      if (res.status === 200) {
-        // access token 설정.
-        const token = res.headers.authorization;
-        console.log("remainlogin", token);
-        setAccessToken(token);
-        setUserInfo(jwt_decode(token));
-        setIsLoggedIn(true);
-        console.log("성공");
-      } else {
-        console.log("실패");
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  };
+  // const loginRemainApi = async () => {
+  //   try {
+  //     const res = await client.post(
+  //       `api/members/loginremain`,
+  //       {},
+  //       { withCredentials: true }
+  //     );
+  //     if (res.status === 200) {
+  //       // access token 설정.
+  //       const token = res.headers.authorization;
+  //       console.log("remainlogin", token);
+  //       setAccessToken(token);
+  //       setUserInfo(jwt_decode(token));
+  //       setIsLoggedIn(true);
+  //       console.log("성공");
+  //     } else {
+  //       console.log("실패");
+  //     }
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // };
 
+  // useEffect(() => {
+  //   loginRemainApi();
+  //   // apitest();
+  // }, []);
+
+  //login method 2.
+  //using local storage
+  useEffect(() => {
+    if (!userInfo) {
+      setIsLoggedIn(false);
+    } else {
+      setIsLoggedIn(true);
+    }
+  }, []);
   const apitest = async () => {
     console.log("asdfasdfads", accessToken);
     try {
@@ -169,10 +174,6 @@ function TopBar() {
     }
   };
 
-  useEffect(() => {
-    loginRemainApi();
-    // apitest();
-  }, []);
   const logoutHandler = async () => {
     // navigate("/login");
     //logout api 요청해서 refresh token 삭제
