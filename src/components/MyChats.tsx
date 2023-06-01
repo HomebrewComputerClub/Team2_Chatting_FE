@@ -1,7 +1,6 @@
 import { useToast } from "@chakra-ui/toast";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { getSender } from "../config/ChagLogics";
 import ChatLoading from "./ChatLoading";
 import GroupChatModal from "./miscellaneous/GroupChatModal";
 import { useRecoilState, useRecoilValue } from "recoil";
@@ -18,24 +17,23 @@ const H1 = styled.h1`
   font-weight: bold;
 `;
 const Img1 = styled.img`
-  width: 3vw;
-  height: 3vw;
+  width: 5vw;
+  height: 5vw;
   border: 1px solid #eeeeee;
   border-radius: 5px;
   margin: 10px;
+  display: block;
 `;
 const MyChats = ({ fetchAgain }: any) => {
-  const [selectedChat, setSelectedChat] = useRecoilState(selectedChatState);
   const userInfo = useRecoilValue(userState);
   const [accessToken, setAccessToken] = useRecoilState(tokenState);
-
+  const [selectedChat, setSelectedChat] = useRecoilState(selectedChatState);
   const [chats, setChats] = useRecoilState(chatsState);
-
-  const toast = useToast();
 
   const fetchChats = async () => {
     // console.log(userInfo._id);
     try {
+      console.log("accesstk", accessToken);
       const config = {
         headers: {
           Authorization: `${accessToken}`,
@@ -43,25 +41,27 @@ const MyChats = ({ fetchAgain }: any) => {
       };
 
       const { data } = await axios.get("/api/getRoomList/direct", config);
+      // const data = [
+      //   {
+      //     roomId: "fakeroomId",
+      //     targetImage:
+      //       "https://res.cloudinary.com/dql4ynp7j/image/upload/v1683891387/mtkc8k2miuzbawzquxt5.jpg",
+      //     targetName: "손병우",
+      //     lastContent: "asdfa;sldfjkal;sdjflkasdjflk;asjdf;lkjasds",
+      //   },
+      // ];
       setChats(data);
     } catch (error) {
-      toast({
-        title: "Error Occured!",
-        description: "Failed to Load the chats",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-        position: "bottom-left",
-      });
+      console.log(error);
     }
   };
+  console.log(chats);
 
   useEffect(() => {
     // setLoggedUser(JSON.parse(localStorage.getItem("userInfo")!));
     fetchChats();
     // eslint-disable-next-line
   }, [fetchAgain]);
-
   return (
     <div
       style={{
@@ -102,31 +102,37 @@ const MyChats = ({ fetchAgain }: any) => {
                   justifyContent: "start",
                   alignItems: "center",
                   width: "100%",
-                  height: "8vh",
+                  height: "7vh",
                 }}
-                key={chat._id}
+                key={chat.roomId}
               >
-                <Img1
-                  src={
-                    chat.users[0]._id === userInfo._id
-                      ? chat.users[1].pic
-                      : chat.users[0].pic
-                  }
-                />
-                <div>
-                  <h1>
-                    {!chat.isGroupChat
-                      ? getSender(userInfo, chat.users)
-                      : chat.chatName}
+                <Img1 src={chat.targetImage} />
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    height: "100%",
+                  }}
+                >
+                  <h1
+                    style={{
+                      display: "block",
+                      fontSize: "18px",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    {chat.targetName}
                   </h1>
-                  {chat.latestMessage && (
-                    <p>
-                      <b>{chat.latestMessage.sender.name} : </b>
-                      {chat.latestMessage.content.length > 50
-                        ? chat.latestMessage.content.substring(0, 51) + "..."
-                        : chat.latestMessage.content}
-                    </p>
-                  )}
+                  <div
+                    style={{
+                      marginTop: "5px",
+                      overflow: "hidden",
+                      width: "90%",
+                    }}
+                  >
+                    {chat.lastContent}
+                  </div>
                 </div>
               </div>
             ))}

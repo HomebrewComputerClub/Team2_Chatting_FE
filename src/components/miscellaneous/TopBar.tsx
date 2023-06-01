@@ -29,10 +29,10 @@ import styled from "styled-components";
 import { MdNotifications } from "react-icons/md";
 import { ChevronDownIcon } from "@chakra-ui/icons";
 import { Button } from "@chakra-ui/react";
-import client from "../../utils/network";
 import { CgProfile } from "react-icons/cg";
 import { Link } from "react-router-dom";
 import { GrLogin } from "react-icons/gr";
+import axios from "axios";
 
 const NotiWrapper = styled.div`
   width: 20vw;
@@ -122,33 +122,19 @@ function TopBar() {
 
   //remain api
   //remain
-  // const loginRemainApi = async () => {
-  //   try {
-  //     const res = await client.post(
-  //       `api/members/loginremain`,
-  //       {},
-  //       { withCredentials: true }
-  //     );
-  //     if (res.status === 200) {
-  //       // access token 설정.
-  //       const token = res.headers.authorization;
-  //       console.log("remainlogin", token);
-  //       setAccessToken(token);
-  //       setUserInfo(jwt_decode(token));
-  //       setIsLoggedIn(true);
-  //       console.log("성공");
-  //     } else {
-  //       console.log("실패");
-  //     }
-  //   } catch (err) {
-  //     console.log(err);
-  //   }
-  // };
+  const loginRemainApi = async () => {
+    try {
+      const res = await axios.get(`api/members/tt`, { withCredentials: true });
+      console.log(res);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
-  // useEffect(() => {
-  //   loginRemainApi();
-  //   // apitest();
-  // }, []);
+  useEffect(() => {
+    loginRemainApi();
+    // apitest();
+  }, []);
 
   //login method 2.
   //using local storage
@@ -167,7 +153,7 @@ function TopBar() {
           Authorization: `${accessToken}`,
         },
       };
-      const res = await client.get(`/api/members/getUsername`, config);
+      const res = await axios.get(`/api/members/getUsername`, config);
       console.log("res", res);
     } catch (err) {
       console.log(err);
@@ -178,7 +164,7 @@ function TopBar() {
     // navigate("/login");
     //logout api 요청해서 refresh token 삭제
     try {
-      const { data } = await client.post(`/api/members/logout`, {});
+      const { data } = await axios.post(`/api/members/logout`, {});
       setUserInfo(null);
       setAccessToken(null);
       setIsLoggedIn(false);
@@ -189,13 +175,6 @@ function TopBar() {
 
   const handleSearch = async () => {
     if (!search) {
-      toast({
-        title: "Please Enter something in search",
-        status: "warning",
-        duration: 5000,
-        isClosable: true,
-        position: "top-left",
-      });
       return;
     }
 
@@ -208,10 +187,7 @@ function TopBar() {
         },
       };
       console.log("accessToken", accessToken);
-      const { data } = await client.get(
-        `/api/members/search/${search}`,
-        config
-      );
+      const { data } = await axios.get(`/api/search/${search}`, config);
 
       setLoading(false);
       setSearchResult(data);
@@ -238,7 +214,7 @@ function TopBar() {
           Authorization: `${accessToken}`,
         },
       };
-      const { data } = await client.post(`/api/createRoom/${userId}`, config);
+      const { data } = await axios.post(`/api/createRoom/${userId}`, config);
       console.log("createdRoom", data);
 
       if (!chats.find((c: any) => c._id === data._id))
@@ -339,7 +315,7 @@ function TopBar() {
             </MenuButton>
             <MenuList pl={2} color="black">
               <NotiWrapper>
-                {!notification.length && "새로운 메세지가 없습니다"}
+                {!notification?.length && "새로운 메세지가 없습니다"}
                 {notification
                   ? notification.map((notif: any) => (
                       <MenuItem

@@ -30,7 +30,7 @@ const Chatpage = () => {
   //remain
   // const loginRemainApi = async () => {
   //   try {
-  //     const res = await client.post(
+  //     const res = await axios.post(
   //       `api/members/loginremain`,
   //       {},
   //       { withCredentials: true }
