@@ -53,7 +53,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     try {
       const config = {
         headers: {
-          Authorization: `Bearer ${accessToken}`,
+          Authorization: `${accessToken}`,
         },
       };
 
@@ -88,7 +88,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         const config = {
           headers: {
             "Content-type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
+            Authorization: `${accessToken}`,
           },
         };
         setNewMessage("");

@@ -78,7 +78,7 @@ const GroupChatModal = () => {
       setLoading(true);
       const config = {
         headers: {
-          Authorization: `Bearer ${accessToken}`,
+          Authorization: `${accessToken}`,
         },
       };
       const { data } = await axios.get(`/api/user?search=${query}`, config);
@@ -103,7 +103,7 @@ const GroupChatModal = () => {
     try {
       const config = {
         headers: {
-          Authorization: `Bearer ${accessToken}`,
+          Authorization: `${accessToken}`,
         },
       };
       const { data } = await axios.post(

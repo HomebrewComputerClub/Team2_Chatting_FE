@@ -50,7 +50,7 @@ const UpdateGroupChatModal = ({
       setLoading(true);
       const config = {
         headers: {
-          Authorization: `Bearer ${accessToken}`,
+          Authorization: `${accessToken}`,
         },
       };
       const { data } = await axios.get(`/api/user?search=${search}`, config);
@@ -77,7 +77,7 @@ const UpdateGroupChatModal = ({
       setRenameLoading(true);
       const config = {
         headers: {
-          Authorization: `Bearer ${accessToken}`,
+          Authorization: `${accessToken}`,
         },
       };
       const { data } = await axios.put(
@@ -135,7 +135,7 @@ const UpdateGroupChatModal = ({
       setLoading(true);
       const config = {
         headers: {
-          Authorization: `Bearer ${accessToken}`,
+          Authorization: `${accessToken}`,
         },
       };
       const { data } = await axios.put(
@@ -183,7 +183,7 @@ const UpdateGroupChatModal = ({
       setLoading(true);
       const config = {
         headers: {
-          Authorization: `Bearer ${accessToken}`,
+          Authorization: `${accessToken}`,
         },
       };
       const { data } = await axios.put(
