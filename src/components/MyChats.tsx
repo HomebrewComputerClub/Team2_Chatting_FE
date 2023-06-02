@@ -55,7 +55,7 @@ const MyChats = ({ fetchAgain }: any) => {
       console.log(error);
     }
   };
-  console.log(chats);
+  console.log("chats", chats);
 
   useEffect(() => {
     // setLoggedUser(JSON.parse(localStorage.getItem("userInfo")!));
@@ -92,7 +92,7 @@ const MyChats = ({ fetchAgain }: any) => {
       <div style={{ height: "80%", width: "100%" }}>
         {chats ? (
           <div style={{ overflowY: "scroll", height: "100%", width: "100%" }}>
-            {chats?.map((chat: any) => (
+            {chats?.map((chat: any, index: number) => (
               <div
                 onClick={() => setSelectedChat(chat)}
                 style={{
@@ -104,7 +104,7 @@ const MyChats = ({ fetchAgain }: any) => {
                   width: "100%",
                   height: "7vh",
                 }}
-                key={chat.roomId}
+                key={index}
               >
                 <Img1 src={chat.targetImage} />
                 <div

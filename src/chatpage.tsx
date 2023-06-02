@@ -20,8 +20,6 @@ const ChatBoxWrapper = styled.div`
 `;
 const Chatpage = () => {
   const userInfo = useRecoilValue(userState);
-
-  const [accessToken, setAccessToken] = useRecoilState(tokenState);
   const [isLoggedIn, setIsLoggedIn] = useRecoilState(loggedInAtom);
   const navigate = useNavigate();
   const [fetchAgain, setFetchAgain] = useState(false);
@@ -29,8 +27,8 @@ const Chatpage = () => {
   useEffect(() => {
     if (!userInfo) {
       setIsLoggedIn(false);
-      // alert("로그인이 필요한 서비스 입니다.");
-      // navigate("/login");
+      alert("로그인이 필요한 서비스 입니다.");
+      navigate("/login");
     } else {
       setIsLoggedIn(true);
     }
