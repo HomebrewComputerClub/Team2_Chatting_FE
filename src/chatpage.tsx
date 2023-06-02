@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 const Wrapper = styled.div`
   background: #f5bf19;
+  grid-area: main-view;
 `;
 const ChatBoxWrapper = styled.div`
   background: inherit;

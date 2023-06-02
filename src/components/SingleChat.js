@@ -96,10 +96,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
           ..._chatMessages,
           JSON.parse(body.body),
         ]);
-      } else if (body.body.type == "TYPING") {
-        setIsTyping(true);
-      } else if (body.body.type == "STOP") {
-        setIsTyping(false);
       }
     });
   };
@@ -161,6 +157,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     }, timerLength);
   };
 
+  console.log("test", chatMessages);
   return (
     <div
       style={{
