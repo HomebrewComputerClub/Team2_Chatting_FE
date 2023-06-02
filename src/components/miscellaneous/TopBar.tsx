@@ -25,7 +25,6 @@ import styled from 'styled-components';
 import { MdNotifications } from 'react-icons/md';
 import { ChevronDownIcon } from '@chakra-ui/icons';
 import { Button } from '@chakra-ui/react';
-import client from '../../utils/network';
 import { CgProfile } from 'react-icons/cg';
 import { Link } from 'react-router-dom';
 import { GrLogin } from 'react-icons/gr';
@@ -162,7 +161,7 @@ function TopBar() {
 	//remain
 	const loginRemainApi = async () => {
 		try {
-			const res = await client.post(`api/members/loginremain`, {}, { withCredentials: true });
+			const res = await axios.post(`api/members/loginremain`, {}, { withCredentials: true });
 			if (res.status === 200) {
 				// access token 설정.
 				const token = res.headers.authorization;
@@ -187,7 +186,7 @@ function TopBar() {
 					Authorization: `${accessToken}`,
 				},
 			};
-			const res = await client.get(`/api/members/getUsername`, config);
+			const res = await axios.get(`/api/members/getUsername`, config);
 			console.log('res', res);
 		} catch (err) {
 			console.log(err);
@@ -202,7 +201,7 @@ function TopBar() {
 		// navigate("/login");
 		//logout api 요청해서 refresh token 삭제
 		try {
-			const { data } = await client.post(`/api/members/logout`, {});
+			const { data } = await axios.post(`/api/members/logout`, {});
 			setUserInfo(null);
 			setAccessToken(null);
 			setIsLoggedIn(false);
@@ -249,7 +248,7 @@ function TopBar() {
 					Authorization: `${accessToken}`,
 				},
 			};
-			const { data } = await client.post(
+			const { data } = await axios.post(
 				`/api/createRoom`,
 				{ targetMemberId: userInfo.memberId },
 				config
@@ -298,7 +297,7 @@ function TopBar() {
 		};
 
 		const searchRecommendListApi = async (input: string) =>
-			await client.get(`/api/search/${input}`, config);
+			await axios.get(`/api/search/${input}`, config);
 		searchRecommendListApi(debouncedQuery)
 			.then((res) => {
 				setSearchResult(res.data);
