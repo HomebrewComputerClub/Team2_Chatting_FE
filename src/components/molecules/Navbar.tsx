@@ -6,11 +6,9 @@ import { RiContactsBook2Fill } from "react-icons/ri";
 import { HiDocumentDuplicate } from "react-icons/hi";
 import { BsFillChatDotsFill } from "react-icons/bs";
 const Wrapper = styled.div`
-  position: fixed;
-  top: 7vh;
-  width: 15vw;
-  left: 0;
-  height: 93vh;
+  grid-area: nav-bar;
+  width: 100%;
+  height: 100%;
   background: white;
   border-right: 1px solid #ccc;
 `;
