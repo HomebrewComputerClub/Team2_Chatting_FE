@@ -37,15 +37,15 @@ export const loggedInAtom = atom({
 
 export const selectedChatState = atom({
   key: "selectedChatState",
-  default: undefined as any,
+  default: null as any,
 });
 
 export const notificationState = atom({
   key: "notificationState",
-  default: "" as any,
+  default: null as any,
 });
 
 export const chatsState = atom({
   key: "chatsState",
-  default: undefined as any,
+  default: null as any,
 });

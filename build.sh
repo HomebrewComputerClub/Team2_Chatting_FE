@@ -11,4 +11,5 @@
 # # sudo npx pm2 start yarn --interpreter bash -- start
 
 # # sudo yarn build
+# Unzip the deployment bundle
 sudo service nginx restart

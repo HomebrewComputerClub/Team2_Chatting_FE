@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import Chatbox from "./components/Chatbox";
 import MyChats from "./components/MyChats";
-import { useRecoilValue } from "recoil";
-import { userState } from "./Store/atom";
+import { useRecoilState, useRecoilValue } from "recoil";
+import { loggedInAtom, tokenState, userState } from "./Store/atom";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 const Wrapper = styled.div`
@@ -20,14 +20,19 @@ const ChatBoxWrapper = styled.div`
 `;
 const Chatpage = () => {
   const userInfo = useRecoilValue(userState);
+  const [isLoggedIn, setIsLoggedIn] = useRecoilState(loggedInAtom);
   const navigate = useNavigate();
   const [fetchAgain, setFetchAgain] = useState(false);
 
-  //로그인 되어있는지 확인
-  // useEffect(() => {
-  //   if (!userInfo) navigate("/login");
-  // }, []);
-
+  useEffect(() => {
+    if (!userInfo) {
+      setIsLoggedIn(false);
+      alert("로그인이 필요한 서비스 입니다.");
+      navigate("/login");
+    } else {
+      setIsLoggedIn(true);
+    }
+  }, []);
   return (
     <Wrapper>
       <ChatBoxWrapper>

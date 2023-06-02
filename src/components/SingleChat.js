@@ -1,26 +1,19 @@
-import { Spinner, useToast } from "@chakra-ui/react";
-import { getSender, getSenderFull } from "../config/ChagLogics";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import * as StompJs from "@stomp/stompjs";
 import axios from "axios";
+import * as SockJS from "sockjs-client";
+import { selectedChatState, tokenState, userState } from "../Store/atom";
+import { useRecoilValue, useRecoilState } from "recoil";
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import { AiOutlineSearch } from "react-icons/ai";
-import { RiSendPlane2Fill } from "react-icons/ri";
-import ProfileModal from "./miscellaneous/ProfileModal";
+import { Spinner } from "@chakra-ui/react";
 import ScrollableChat from "./ScrollableChat";
+import { getSenderFull } from "../config/ChagLogics";
 import UpdateGroupChatModal from "./miscellaneous/UpdateGroupChatModal";
-import { useRecoilState, useRecoilValue } from "recoil";
-import {
-  notificationState,
-  selectedChatState,
-  tokenState,
-  userState,
-} from "../Store/atom";
 import styled from "styled-components";
-import * as StompJs from "@stomp/stompjs";
-import { BsFillChatHeartFill } from "react-icons/bs";
-var selectedChatCompare;
-//var socket;
-
+import { RiSendPlane2Fill } from "react-icons/ri";
+// import instance from "../../utils/axiosConfig";
 const Button = styled.button`
   border: none;
   background: #f5bf19;
@@ -32,289 +25,111 @@ const Button = styled.button`
   margin: 10px;
 `;
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
-  const client = useRef({});
-  const [messages, setMessages] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [newMessage, setNewMessage] = useState("");
-  const [socketConnected, setSocketConnected] = useState(false);
-  const [typing, setTyping] = useState(false);
-  const [istyping, setIsTyping] = useState(false);
-  const toast = useToast();
-
-  const [selectedChat, setSelectedChat] = useRecoilState(selectedChatState);
+  const [chatList, setChatList] = useState([]);
+  const [chat, setChat] = useState("");
+  const [chatMessages, setChatMessages] = useState([]);
+  const [message, setMessage] = useState("");
   const userInfo = useRecoilValue(userState);
-  const accessToken = useRecoilState(tokenState);
-  const [notification, setNotification] = useRecoilState(notificationState);
-
-  //socket functions: send and fetch messages
-  const fetchMessages = async () => {
-    if (!selectedChat) return;
-
-    try {
-      const config = {
+  const accessToken = useRecoilValue(tokenState);
+  const [selectedChat, setSelectedChat] = useRecoilState(selectedChatState);
+  const [loading, setLoading] = useState(false);
+  //   const { apply_id } = useParams();
+  const client = useRef({});
+  const getChatList = async () => {
+    const data = await axios.get(
+      `https://cocobol.site/api/getChatList/${selectedChat.roomId}`,
+      {
         headers: {
-          Authorization: `Bearer ${accessToken}`,
+          Authorization: accessToken,
         },
-      };
-
-      setLoading(true);
-
-      const { data } = await axios.get(
-        `/api/message/${selectedChat._id}`,
-        config
-      );
-      setMessages(data);
-      setLoading(false);
-
-      // socket.emit("join chat", selectedChat._id);
-      publishJoinedChat(selectedChat._id);
-    } catch (error) {
-      toast({
-        title: "Error Occured!",
-        description: "Failed to Load the Messages",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-        position: "bottom",
-      });
-    }
-  };
-
-  const sendMessage = async (event) => {
-    if (event.key === "Enter" && newMessage) {
-      // socket.emit("stop typing", selectedChat._id);
-      publishStoptyping(selectedChat._id);
-      try {
-        const config = {
-          headers: {
-            "Content-type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
-          },
-        };
-        setNewMessage("");
-        const { data } = await axios.post(
-          "/api/message",
-          {
-            content: newMessage,
-            chatId: selectedChat,
-          },
-          config
-        );
-        // socket.emit("new message", data);
-        publish(data);
-        setMessages([...messages, data]);
-      } catch (error) {
-        toast({
-          title: "Error Occured!",
-          description: "Failed to send the Message",
-          status: "error",
-          duration: 5000,
-          isClosable: true,
-          position: "bottom",
-        });
+        withCredentials: true,
       }
-    }
+    );
+    console.log(data.data);
+    setChatMessages(data.data);
   };
-
-  //connect
   const connect = async () => {
     client.current = new StompJs.Client({
-      brokerURL: "wss://localhost:8088/api/ws",
+      brokerURL: "wss://cocobol.site/api/ws",
+      webSocketFactory: () => {
+        return new SockJS("https://cocobol.site/api/ws");
+      },
       onConnect: async () => {
         console.log("success");
         // await makeRoom();
         // console.log("roomCreated:" + localStorage.getItem("roomId"));
-        // socket.on("connected", () => setSocketConnected(true));
-        // socket.on("typing", () => setIsTyping(true));
-        // socket.on("stop typing", () => setIsTyping(false));
         subscribe();
-        subscribeMessage();
       },
     });
     client.current.activate();
   };
 
-  //subscribe
-  //subscribe: 1. enter room 2. he is typing 3. he stopped typing
-  const subscribe = () => {
-    // socket.on("connected", () => setSocketConnected(true));
-    // socket.on("typing", () => setIsTyping(true));
-    // socket.on("stop typing", () => setIsTyping(false));
-    client.current.subscribe(`/direct/room/${selectedChat._id}`, (body) => {
-      setSocketConnected(true);
-    });
-    client.current.subscribe(
-      `/direct/room/typing/${selectedChat._id}`,
-      (body) => {
-        setIsTyping(true);
-      }
-    );
-    client.current.subscribe(
-      `/direct/room/stoptyping${selectedChat._id}`,
-      (body) => {
-        setIsTyping(false);
-      }
-    );
-  };
-
-  //subscribe on new message recieved
-  const subscribeMessage = () => {
-    //   socket.on("message recieved", (newMessageRecieved) => {
-    //     if (
-    //       !selectedChatCompare || // if chat is not selected or doesn't match current chat
-    //       selectedChatCompare._id !== newMessageRecieved.chat._id
-    //     ) {
-    //       if (!notification.includes(newMessageRecieved)) {
-    //         console.log("noti");
-    //         setNotification([newMessageRecieved, ...notification]);
-    //         setFetchAgain(!fetchAgain);
-    //       }
-    //     } else {
-    //       setMessages([...messages, newMessageRecieved]);
-    //     }
-    //   });
-    client.current.subscribe(
-      `/direct/message/${selectedChat._id}`,
-      (newMessageRecieved) => {
-        if (
-          !selectedChatCompare || // if chat is not selected or doesn't match current chat
-          selectedChatCompare._id !== newMessageRecieved.chat._id
-        ) {
-          if (!notification.includes(newMessageRecieved)) {
-            console.log("noti");
-            setNotification([newMessageRecieved, ...notification]);
-            setFetchAgain(!fetchAgain);
-          }
-        } else {
-          setMessages([...messages, newMessageRecieved]);
-        }
-      }
-    );
-  };
-
-  // publish
-  //publish : message sent
   const publish = (chat) => {
     console.log("pub called");
     if (!client.current.connected) return;
     console.log("have connection");
     client.current.publish({
       destination: "/pub/message/send/direct",
+      // headers: { Authorization: "123123123123123" },
       body: JSON.stringify({
-        type: "TALK",
-        roomId: selectedChat._id,
-        sender: "sirong",
+        type: "SEND",
+        // roomId: localStorage.getItem("roomId"),
+        roomId: selectedChat.roomId,
+        sender: userInfo.name,
         detail: chat,
+        memberId: userInfo.userId,
       }),
     });
 
-    setNewMessage("");
+    setMessage("");
   };
 
-  //publish user info
-  const publishUserInfo = (userInfo) => {
-    console.log("pub called");
-    if (!client.current.connected) return;
-    console.log("have connection");
-    client.current.publish({
-      destination: "/pub/message/send/direct",
-      body: JSON.stringify(userInfo),
+  const subscribe = () => {
+    // let roomId = localStorage.getItem("roomId");
+    client.current.subscribe(`/direct/room/${selectedChat.roomId}`, (body) => {
+      console.log("body" + body);
+      console.log("body.body" + body.body);
+      const json_body = JSON.parse(body.body);
+      console.log("got msg" + json_body);
+      // setChatList((_chat_list) => [..._chat_list, json_body]);
+      setChatMessages((_chatMessages) => [
+        ..._chatMessages,
+        JSON.parse(body.body),
+      ]);
     });
   };
 
-  //publish I stop typing
-  const publishStoptyping = (roomId) => {
-    console.log("pub called");
-    if (!client.current.connected) return;
-    console.log("have connection");
-    client.current.publish({
-      destination: "/pub/message/send/stoptyping",
-      roomId,
-    });
+  const disconnect = () => {
+    client.current.deactivate();
   };
 
-  //publish I started Typing
-  const publishTyping = (roomId) => {
-    console.log("pub called");
-    if (!client.current.connected) return;
-    console.log("have connection");
-    client.current.publish({
-      destination: "/pub/message/send/typing",
-      roomId,
-    });
-  };
-
-  //push I joined chat
-  const publishJoinedChat = (roomId) => {
-    console.log("pub called");
-    if (!client.current.connected) return;
-    console.log("have connection");
-    client.current.publish({
-      destination: "/pub/joinedChat",
-      roomId,
-    });
-  };
-
-  //useEffect
   useEffect(() => {
-    // socket = io(ENDPOINT);
-    // socket.emit("setup", userInfo);
-    publishUserInfo(userInfo);
-    // socket.on("connected", () => setSocketConnected(true));
-    // socket.on("typing", () => setIsTyping(true));
-    // socket.on("stop typing", () => setIsTyping(false));
+    getChatList();
     connect();
-  }, []);
 
-  useEffect(() => {
-    fetchMessages();
-
-    selectedChatCompare = selectedChat;
-    // eslint-disable-next-line
+    return () => disconnect();
   }, [selectedChat]);
 
-  // useEffect(() => {
-  //   //   socket.on("message recieved", (newMessageRecieved) => {
-  //   //     if (
-  //   //       !selectedChatCompare || // if chat is not selected or doesn't match current chat
-  //   //       selectedChatCompare._id !== newMessageRecieved.chat._id
-  //   //     ) {
-  //   //       if (!notification.includes(newMessageRecieved)) {
-  //   //         console.log("noti");
-  //   //         setNotification([newMessageRecieved, ...notification]);
-  //   //         setFetchAgain(!fetchAgain);
-  //   //       }
-  //   //     } else {
-  //   //       setMessages([...messages, newMessageRecieved]);
-  //   //     }
-  //   //   });
-  //   subscribeMessage(selectedChat._id);
-  // });
-
-  const typingHandler = (e) => {
-    setNewMessage(e.target.value);
-
-    if (!socketConnected) return;
-
-    if (!typing) {
-      setTyping(true);
-      // socket.emit("typing", selectedChat._id);
-      publishTyping(selectedChat._id);
-    }
-    let lastTypingTime = new Date().getTime();
-    var timerLength = 3000;
-    setTimeout(() => {
-      var timeNow = new Date().getTime();
-      var timeDiff = timeNow - lastTypingTime;
-      if (timeDiff >= timerLength && typing) {
-        // socket.emit("stop typing", selectedChat._id);
-        publishTyping(selectedChat._id);
-        setTyping(false);
-      }
-    }, timerLength);
-  };
-
   return (
+    // <div>
+    //   {chatMessages && chatMessages.length > 0 && (
+    //     <ul style={{ height: "60vw", width: "40vw", overflow: "scroll" }}>
+    //       {chatMessages.map((_chatMessage, index) => (
+    //         <li key={index}>{_chatMessage.detail}</li>
+    //       ))}
+    //     </ul>
+    //   )}
+    //   <div>
+    //     <input
+    //       type={"text"}
+    //       placeholder={"message"}
+    //       value={message}
+    //       onChange={(e) => setMessage(e.target.value)}
+    //       onKeyPress={(e) => e.which === 13 && publish(message)}
+    //     />
+    //     <button onClick={() => publish(message)}>send</button>
+    //   </div>
+    // </div>
     <div
       style={{
         display: "flex",
@@ -351,19 +166,19 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             >
               <ArrowBackIcon />
             </Button>
-            {messages &&
+            {message &&
               (!selectedChat.isGroupChat ? (
                 <div style={{ display: "flex", alignItems: "center" }}>
-                  <ProfileModal
+                  {/* <ProfileModal
                     user={getSenderFull(userInfo, selectedChat.users)}
                   />
-                  {getSender(userInfo, selectedChat.users)}
+                  {getSender(userInfo, selectedChat.users)} */}
                 </div>
               ) : (
                 <>
                   {selectedChat.chatName.toUpperCase()}
                   <UpdateGroupChatModal
-                    fetchMessages={fetchMessages}
+                    fetchMessages={getChatList}
                     fetchAgain={fetchAgain}
                     setFetchAgain={setFetchAgain}
                   />
@@ -385,66 +200,33 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                 margin="auto"
               />
             ) : (
-              <ScrollableChat messages={messages} />
+              <ScrollableChat messages={chatMessages} />
             )}
           </div>
-          <form
-            onKeyDown={sendMessage}
-            id="first-name"
-            onSubmit={(e) => {
-              e.preventDefault();
-            }}
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            {istyping ? (
-              <div>
-                <h1>he's typing</h1>
-              </div>
-            ) : null}
-            <div className="search-box" style={{ width: "80%" }}>
-              <input
-                type="text"
-                placeholder="입력..."
-                onChange={typingHandler}
-              />
-              <button>
-                <RiSendPlane2Fill />
-              </button>
-            </div>
-          </form>
+          <div className="search-box" style={{ width: "100%" }}>
+            <input
+              type={"text"}
+              placeholder={"message"}
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              onKeyPress={(e) => e.which === 13 && publish(message)}
+            />
+            <button onClick={() => publish(message)}>
+              <RiSendPlane2Fill />
+            </button>
+          </div>
         </div>
       ) : (
         // to get socket.io on same page
         <div
           style={{
-            width: "100%",
-            height: "100%",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            flexDirection: "column",
+            background: "#F5BF19",
           }}
         >
-          <BsFillChatHeartFill size={100} />
-          <h1
-            style={{
-              display: "block",
-              margin: "30px",
-              fontFamily: "Lilita One",
-              fontSize: "30px",
-              fontWeight: "bold",
-            }}
-          >
-            채팅을 시작해보세요!
-          </h1>
+          <h1>Click on a user to start chatting</h1>
         </div>
       )}
     </div>
   );
 };
-
 export default SingleChat;
