@@ -224,17 +224,7 @@ function TopBar() {
 		}
 
 		try {
-			setLoading(true);
-
-			const config = {
-				headers: {
-					Authorization: `${accessToken}`,
-				},
-			};
 			console.log('accessToken', accessToken);
-			//const { data } = await client.get(`/api/members/search/${search}`, config);
-			//const data = dummy;
-			setLoading(false);
 		} catch (error) {
 			toast({
 				title: 'Error Occured!',
@@ -306,16 +296,15 @@ function TopBar() {
 				Authorization: `${accessToken}`,
 			},
 		};
-		/*
+
 		const searchRecommendListApi = async (input: string) =>
-			await client.get(`/api/members/search/${input}`, config);
+			await client.get(`/api/search/${input}`, config);
 		searchRecommendListApi(debouncedQuery)
 			.then((res) => {
 				setSearchResult(res.data);
 			})
 			.catch((err) => console.log(err.response));
-			*/
-		setSearchResult(dummy);
+
 		console.log(debouncedQuery);
 	}, [debouncedQuery, accessToken]);
 

@@ -18,5 +18,5 @@ export async function SignUpApi(data: any) {
 
 // 카카오 소셜 로그인
 export async function KakaoLogInApi(data: string) {
-	return await client.post('/api/members/kakao', data).catch((err) => err?.response);
+	return await client.post('/oauth2/authorization/kakao', data).catch((err) => err?.response);
 }

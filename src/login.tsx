@@ -81,6 +81,7 @@ const Login = () => {
 	const REST_API_KEY = '47430455fb390115140c2fdeb2b46a6b';
 	const REDIRECT_URI = 'http://localhost:3000/kakao';
 	const KAKAO_AUTH_URL = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
+	const SERVER_URL = 'https://172.30.1.7:8080/oauth2/authorization/kakao';
 
 	const onSubmitHandler: SubmitHandler<FormValues> = async (data) => {
 		console.log('login');
@@ -118,8 +119,9 @@ const Login = () => {
 	};
 
 	console.log('decode', userInfo);
+	// 서버주소로 가면 서버에서 카카오어스로 리다이렉션.
 	const kakaoLogin = () => {
-		window.location.href = KAKAO_AUTH_URL;
+		window.location.href = SERVER_URL;
 	};
 
 	console.log('userInfo', userInfo);
