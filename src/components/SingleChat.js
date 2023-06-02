@@ -18,6 +18,7 @@ import {
 import styled from "styled-components";
 import * as StompJs from "@stomp/stompjs";
 import { BsFillChatHeartFill } from "react-icons/bs";
+import * as SockJs from "sockjs-client";
 var selectedChatCompare;
 //var socket;
 
@@ -44,7 +45,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const userInfo = useRecoilValue(userState);
   const [accessToken, setAccessToken] = useRecoilState(tokenState);
   const [notification, setNotification] = useRecoilState(notificationState);
-  console.log("selectedCahat", selectedChat);
   //socket functions: send and fetch messages
   const fetchMessages = async () => {
     if (selectedChat == null) return;
@@ -72,13 +72,10 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     }
   };
 
+  console.log('mesages chatlisth", ', messages);
   const sendMessage = async (event) => {
     if (event.key === "Enter" && newMessage) {
-      // socket.emit("stop typing", selectedChat._id);
-      // publishStoptyping(selectedChat.roomId);
       try {
-        setNewMessage("");
-        // socket.emit("new message", data);
         publish(newMessage);
       } catch (error) {
         console.log(error);
@@ -87,55 +84,57 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   };
 
   const subscribe = () => {
+    console.log("subscribe", selectedChat.roomId);
+    if (selectedChat == null) return;
     client.current.subscribe(
       `/direct/room/${selectedChat.roomId}`,
       (newMessageRecieved) => {
-        if (
-          !selectedChatCompare || // if chat is not selected or doesn't match current chat
-          selectedChatCompare.roomId !== newMessageRecieved.chat.roomId
-        ) {
-          if (!notification.includes(newMessageRecieved)) {
-            console.log("noti");
-            setNotification([newMessageRecieved, ...notification]);
-            setFetchAgain(!fetchAgain);
-          }
-        } else {
-          setMessages([...messages, newMessageRecieved]);
-        }
+        // if (
+        //   !selectedChatCompare || // if chat is not selected or doesn't match current chat
+        //   selectedChatCompare.roomId !== newMessageRecieved.chat.roomId
+        // ) {
+        //   if (!notification.includes(newMessageRecieved)) {
+        //     console.log("noti");
+        //     setNotification([newMessageRecieved, ...notification]);
+        //     setFetchAgain(!fetchAgain);
+        //   }
+        // } else {
+        //   setMessages([...messages, newMessageRecieved]);
+        // }
+        console.log("fuck you", newMessageRecieved.body);
+        setMessages([...messages, JSON.parse(newMessageRecieved.body)]);
       }
     );
   };
 
   //connect
   const connect = async () => {
-    console.log("fuckyou", accessToken);
     client.current = new StompJs.Client({
       brokerURL: "wss://cocobol.site/api/ws",
+      webSocketFactory: () => {
+        return new SockJs("https://cocobol.site/api/ws");
+      },
       onConnect: async () => {
         setSocketConnected(true);
         // subscribeMessage();
         subscribe();
       },
-      connectHeaders: {
-        Authorization: `${accessToken}`,
-      },
+      connectHeaders: { Authorization: accessToken },
     });
     client.current.activate();
   };
-
-  // publish
-  //publish : message sent
   const publish = (targetTxt) => {
-    console.log("pub called");
+    if (selectedChat == null) return;
     if (!client.current.connected) return;
-    console.log("have connection");
     client.current.publish({
       destination: "/pub/message/send/direct",
+      headers: { Authorization: accessToken },
       body: JSON.stringify({
         type: "SEND",
         roomId: selectedChat.roomId,
         sender: userInfo.name,
         detail: targetTxt,
+        memberId: userInfo.userId,
       }),
     });
 
@@ -247,8 +246,9 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                 alignSelf="center"
                 margin="auto"
               />
-            ) : // <ScrollableChat messages={messages} />
-            null}
+            ) : (
+              <ScrollableChat messages={messages} />
+            )}
           </div>
           <form
             onKeyDown={sendMessage}
@@ -272,6 +272,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                 type="text"
                 placeholder="입력..."
                 onChange={typingHandler}
+                value={newMessage}
               />
               <button>
                 <RiSendPlane2Fill />

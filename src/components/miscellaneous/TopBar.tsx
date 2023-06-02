@@ -164,7 +164,10 @@ function TopBar() {
     // navigate("/login");
     //logout api 요청해서 refresh token 삭제
     try {
+      localStorage.removeItem("userInfo");
+      localStorage.removeItem("accessToken");
       const { data } = await axios.post(`/api/members/logout`, {});
+
       setUserInfo(null);
       setAccessToken(null);
       setIsLoggedIn(false);

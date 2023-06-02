@@ -26,38 +26,6 @@ const Chatpage = () => {
   const navigate = useNavigate();
   const [fetchAgain, setFetchAgain] = useState(false);
 
-  //remain api
-  //remain
-  // const loginRemainApi = async () => {
-  //   try {
-  //     const res = await axios.post(
-  //       `api/members/loginremain`,
-  //       {},
-  //       { withCredentials: true }
-  //     );
-  //     if (res.status === 200) {
-  //       // access token 설정.
-  //       const token = res.headers.authorization;
-  //       console.log("remainlogin", token);
-  //       setAccessToken(token);
-  //       setUserInfo(jwt_decode(token));
-  //       setIsLoggedIn(true);
-  //       console.log("성공");
-  //     } else {
-  //       console.log("실패");
-  //     }
-  //   } catch (err) {
-  //     console.log(err);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   loginRemainApi();
-  //   // apitest();
-  // }, []);
-
-  //login method 2.
-  //using local storage
   useEffect(() => {
     if (!userInfo) {
       setIsLoggedIn(false);
