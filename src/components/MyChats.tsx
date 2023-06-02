@@ -41,15 +41,6 @@ const MyChats = ({ fetchAgain }: any) => {
       };
 
       const { data } = await axios.get("/api/getRoomList/direct", config);
-      // const data = [
-      //   {
-      //     roomId: "fakeroomId",
-      //     targetImage:
-      //       "https://res.cloudinary.com/dql4ynp7j/image/upload/v1683891387/mtkc8k2miuzbawzquxt5.jpg",
-      //     targetName: "손병우",
-      //     lastContent: "asdfa;sldfjkal;sdjflkasdjflk;asjdf;lkjasds",
-      //   },
-      // ];
       setChats(data);
     } catch (error) {
       console.log(error);
@@ -102,7 +93,7 @@ const MyChats = ({ fetchAgain }: any) => {
                   justifyContent: "start",
                   alignItems: "center",
                   width: "100%",
-                  height: "7vh",
+                  height: "9vh",
                 }}
                 key={index}
               >

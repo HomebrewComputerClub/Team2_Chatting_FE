@@ -48,32 +48,7 @@ function Navbar() {
             <H1>Welcome</H1>
           </Link>
         </Li>
-        <Li className="menu-item">
-          <Link
-            to={"/portfolio"}
-            style={{
-              display: "flex",
-              justifyContent: "space-around",
-              alignItems: "center",
-            }}
-          >
-            <HiDocumentDuplicate color={"#f5bf19"} size={32} />
-            <H1>portfolio</H1>
-          </Link>
-        </Li>
-        <Li className="menu-item">
-          <Link
-            to={"/contact"}
-            style={{
-              display: "flex",
-              justifyContent: "space-around",
-              alignItems: "center",
-            }}
-          >
-            <RiContactsBook2Fill color={"#f5bf19"} size={32} />
-            <H1>Contact</H1>
-          </Link>
-        </Li>
+
         <Li className="menu-item">
           <Link
             to={"/chats"}
