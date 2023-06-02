@@ -32,13 +32,10 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const userInfo = useRecoilValue(userState);
   const accessToken = useRecoilValue(tokenState);
   const [selectedChat, setSelectedChat] = useRecoilState(selectedChatState);
-  const [typing, setTyping] = useState(false);
-  const [istyping, setIsTyping] = useState(false);
   const [loading, setLoading] = useState(false);
   //   const { apply_id } = useParams();
   const client = useRef({});
   const getChatList = async () => {
-    if (!selectedChat) return;
     const data = await axios.get(
       `https://cocobol.site/api/getChatList/${selectedChat.roomId}`,
       {
@@ -88,15 +85,17 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   };
 
   const subscribe = () => {
-    if (!selectedChat) return;
     // let roomId = localStorage.getItem("roomId");
     client.current.subscribe(`/direct/room/${selectedChat.roomId}`, (body) => {
-      if (body.body.type == "SEND") {
-        setChatMessages((_chatMessages) => [
-          ..._chatMessages,
-          JSON.parse(body.body),
-        ]);
-      }
+      console.log("body" + body);
+      console.log("body.body" + body.body);
+      const json_body = JSON.parse(body.body);
+      console.log("got msg" + json_body);
+      // setChatList((_chat_list) => [..._chat_list, json_body]);
+      setChatMessages((_chatMessages) => [
+        ..._chatMessages,
+        JSON.parse(body.body),
+      ]);
     });
   };
 
@@ -111,54 +110,26 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     return () => disconnect();
   }, [selectedChat]);
 
-  const typingHandler = (e) => {
-    setMessage(e.target.value);
-
-    if (!typing) {
-      // setTyping(true);
-      // socket.emit("typing", selectedChat._id);
-      //publish typing
-      setTyping(true);
-      client.current.publish({
-        destination: "/pub/message/send/direct",
-        // headers: { Authorization: "123123123123123" },
-        body: JSON.stringify({
-          type: "TYPING",
-          roomId: selectedChat.roomId,
-          sender: userInfo.name,
-          detail: chat,
-          memberId: userInfo.userId,
-        }),
-      });
-    }
-    let lastTypingTime = new Date().getTime();
-    var timerLength = 3000;
-    setTimeout(() => {
-      var timeNow = new Date().getTime();
-      var timeDiff = timeNow - lastTypingTime;
-      if (timeDiff >= timerLength && typing) {
-        // socket.emit("stop typing", selectedChat._id);
-        // setTyping(false);
-        //publish stop typing
-        setTyping(false);
-        client.current.publish({
-          destination: "/pub/message/send/direct",
-          // headers: { Authorization: "123123123123123" },
-          body: JSON.stringify({
-            type: "STOP",
-            // roomId: localStorage.getItem("roomId"),
-            roomId: selectedChat.roomId,
-            sender: userInfo.name,
-            detail: chat,
-            memberId: userInfo.userId,
-          }),
-        });
-      }
-    }, timerLength);
-  };
-
-  console.log("test", chatMessages);
   return (
+    // <div>
+    //   {chatMessages && chatMessages.length > 0 && (
+    //     <ul style={{ height: "60vw", width: "40vw", overflow: "scroll" }}>
+    //       {chatMessages.map((_chatMessage, index) => (
+    //         <li key={index}>{_chatMessage.detail}</li>
+    //       ))}
+    //     </ul>
+    //   )}
+    //   <div>
+    //     <input
+    //       type={"text"}
+    //       placeholder={"message"}
+    //       value={message}
+    //       onChange={(e) => setMessage(e.target.value)}
+    //       onKeyPress={(e) => e.which === 13 && publish(message)}
+    //     />
+    //     <button onClick={() => publish(message)}>send</button>
+    //   </div>
+    // </div>
     <div
       style={{
         display: "flex",
@@ -218,7 +189,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             </Button>
           </div>
           <div
-            style={{ overflow: "scroll", height: "60vh", background: "white" }}
+            style={{ overflow: "scroll", height: "70vh", background: "white" }}
           >
             {loading ? (
               <Spinner
@@ -232,17 +203,12 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
               <ScrollableChat messages={chatMessages} />
             )}
           </div>
-          {istyping ? (
-            <div>
-              <h1>he's typing</h1>
-            </div>
-          ) : null}
           <div className="search-box" style={{ width: "100%" }}>
             <input
               type={"text"}
               placeholder={"message"}
               value={message}
-              onChange={typingHandler}
+              onChange={(e) => setMessage(e.target.value)}
               onKeyPress={(e) => e.which === 13 && publish(message)}
             />
             <button onClick={() => publish(message)}>
