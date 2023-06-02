@@ -371,7 +371,7 @@ function TopBar() {
 						</MenuButton>
 						<MenuList pl={2} color='black'>
 							<NotiWrapper>
-								{!notification.length && '새로운 메세지가 없습니다'}
+								{!notification?.length && '새로운 메세지가 없습니다'}
 								{notification
 									? notification.map((notif: any) => (
 											<MenuItem
